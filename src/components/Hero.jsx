@@ -2,6 +2,7 @@ import { ArrowDown } from 'lucide-react'
 import { GhostCTA, PrimaryCTA } from './Brand'
 import Photo from './Photo'
 import { HERO_IMAGE } from '../lib/images'
+import { SEGMENT } from '../lib/campaign'
 
 export default function Hero() {
   return (
@@ -30,11 +31,11 @@ export default function Hero() {
               Someone is <span className="text-clay">always</span> at the window.
             </h1>
 
-            <p className="mt-6 max-w-[34rem] text-[1.0625rem] text-ink/65">
-              Your customer messages at 11pm on a Sunday. haazir answers in the language
-              they wrote in, books them the slot they asked for, and hands the thread to
-              your team the moment it needs a person.
-            </p>
+            {SEGMENT.eyebrow && (
+              <p className="mt-5 text-[0.95rem] font-medium text-clay-deep">{SEGMENT.eyebrow}</p>
+            )}
+
+            <p className="mt-6 max-w-[34rem] text-[1.0625rem] text-ink/65">{SEGMENT.subhead}</p>
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
               <PrimaryCTA>Send us a WhatsApp</PrimaryCTA>
@@ -67,14 +68,13 @@ export default function Hero() {
             <figure className="absolute -bottom-7 -left-4 w-[15.5rem] rounded-2xl border border-line bg-white p-3.5 shadow-[0_18px_44px_-14px_rgb(14_16_19_/_0.2)] sm:-left-8 sm:w-[17.5rem]">
               <figcaption className="mb-2.5 flex items-center gap-2 text-[0.7rem] tracking-[0.12em] text-ink/60 uppercase">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" aria-hidden="true" />
-                11:42 pm
+                {SEGMENT.chat.time}
               </figcaption>
               <p className="rounded-2xl rounded-bl-md bg-stone px-3.5 py-2.5 text-[0.9rem] leading-snug text-ink/80">
-                Is the Kundan set still available?
+                {SEGMENT.chat.from}
               </p>
               <p className="mt-2 ml-auto w-fit max-w-[92%] rounded-2xl rounded-br-md bg-forest px-3.5 py-2.5 text-[0.9rem] leading-snug text-paper">
-                Ji haan — it's in the Johari Bazaar store. Shall I hold it for you till
-                tomorrow 6pm?
+                {SEGMENT.chat.reply}
               </p>
             </figure>
           </div>

@@ -5,6 +5,7 @@ import WhatItDoes from './components/WhatItDoes'
 import Calculator from './components/Calculator'
 import HowItWorks from './components/HowItWorks'
 import Pricing from './components/Pricing'
+import Faq from './components/Faq'
 import CallToAction from './components/CallToAction'
 import Footer from './components/Footer'
 
@@ -19,6 +20,7 @@ export default function App() {
         <Calculator />
         <HowItWorks />
         <Pricing />
+        <Faq />
         <CallToAction />
       </main>
       <Footer />

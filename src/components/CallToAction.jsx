@@ -21,7 +21,7 @@ export default function CallToAction() {
           </p>
 
           <div className="mt-9 flex justify-center">
-            <PrimaryCTA className="px-7 py-4">Message haazir on WhatsApp</PrimaryCTA>
+            <PrimaryCTA context="missed" className="px-7 py-4">Message haazir on WhatsApp</PrimaryCTA>
           </div>
 
           <p className="mt-6 text-[0.88rem] text-ink/60">

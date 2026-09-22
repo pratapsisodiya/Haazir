@@ -1,12 +1,19 @@
 import Photo from './Photo'
 import { MARQUEE_IMAGES } from '../lib/images'
+import { SEGMENT } from '../lib/campaign'
 
 /**
  * Edge-to-edge strip that scrolls forever. The list is rendered twice and the
  * track travels exactly -50%, so the loop is seamless. Reduced motion pins it.
+ *
+ * On a segment page the strip leads with that segment's photo, so a jeweller
+ * sees a showroom first rather than a hotel desk.
  */
 export default function Marquee() {
-  const reel = [...MARQUEE_IMAGES, ...MARQUEE_IMAGES]
+  const lead = MARQUEE_IMAGES.findIndex((i) => i.label === SEGMENT.leadImage)
+  const ordered =
+    lead > 0 ? [...MARQUEE_IMAGES.slice(lead), ...MARQUEE_IMAGES.slice(0, lead)] : MARQUEE_IMAGES
+  const reel = [...ordered, ...ordered]
 
   return (
     <section

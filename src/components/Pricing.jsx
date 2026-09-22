@@ -75,7 +75,7 @@ export default function Pricing() {
         </div>
 
         <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
-          <PrimaryCTA>Ask what yours would cost</PrimaryCTA>
+          <PrimaryCTA context="pricing">Ask what yours would cost</PrimaryCTA>
           <p className="text-[0.92rem] text-ink/60">
             No retainer lock-in. Cancel the monthly whenever you like.
           </p>

@@ -1,4 +1,4 @@
-import { WHATSAPP_LINK } from '../lib/site'
+import { whatsappLink } from '../lib/site'
 
 /**
  * The jharokha mark: a pointed, cusped Rajasthani arch with a notch at its
@@ -50,10 +50,20 @@ export function WhatsAppGlyph({ className = 'h-[1.05em] w-[1.05em]' }) {
 const base =
   'inline-flex items-center justify-center gap-2.5 rounded-full px-6 py-3.5 text-[0.96rem] font-medium tracking-[-0.01em] transition-[transform,background-color,border-color,box-shadow] duration-200 will-change-transform active:scale-[0.97]'
 
-export function PrimaryCTA({ children = 'Start on WhatsApp', className = '', href = WHATSAPP_LINK }) {
+/**
+ * `context` decides which opening line lands in the customer's chat — see
+ * OPENERS in lib/site.js. `extra` folds a detail into it (the calculator's figure).
+ */
+export function PrimaryCTA({
+  children = 'Start on WhatsApp',
+  className = '',
+  context = 'hero',
+  extra = '',
+  href,
+}) {
   return (
     <a
-      href={href}
+      href={href ?? whatsappLink(context, extra)}
       target="_blank"
       rel="noopener noreferrer"
       className={`${base} bg-clay-deep text-white shadow-[0_6px_14px_-8px_rgb(168_72_43_/_0.5)] hover:-translate-y-0.5 hover:bg-[#8f3c23] active:translate-y-0 ${className}`}

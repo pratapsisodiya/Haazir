@@ -8,6 +8,7 @@ const links = [
   { label: 'The cost', href: '#calculator' },
   { label: 'How it works', href: '#how-it-works' },
   { label: 'Pricing', href: '#pricing' },
+  { label: 'Questions', href: '#faq' },
 ]
 
 export default function Nav() {
@@ -57,7 +58,7 @@ export default function Nav() {
               button's own unconditional `inline-flex` for the `display`
               cascade — see PrimaryCTA's `base` classes in Brand.jsx. */}
           <div className="hidden sm:block">
-            <PrimaryCTA className="px-5 py-2.5 text-[0.9rem]">Talk to us</PrimaryCTA>
+            <PrimaryCTA context="nav" className="px-5 py-2.5 text-[0.9rem]">Talk to us</PrimaryCTA>
           </div>
 
           <button
@@ -91,7 +92,7 @@ export default function Nav() {
               </li>
             ))}
           </ul>
-          <PrimaryCTA className="mt-5 w-full">Talk to us</PrimaryCTA>
+          <PrimaryCTA context="nav" className="mt-5 w-full">Talk to us</PrimaryCTA>
         </div>
       )}
     </header>
