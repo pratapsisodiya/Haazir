@@ -5,6 +5,7 @@ import { useScrolled } from '../lib/hooks'
 
 const links = [
   { label: 'What it does', href: '#what-it-does' },
+  { label: 'See it work', href: '#conversation' },
   { label: 'The cost', href: '#calculator' },
   { label: 'How it works', href: '#how-it-works' },
   { label: 'Pricing', href: '#pricing' },
@@ -43,7 +44,7 @@ export default function Nav() {
           <Wordmark size={32} />
         </a>
 
-        <ul className="hidden items-center gap-8 lg:flex">
+        <ul className="hidden items-center gap-6 lg:flex xl:gap-8">
           {links.map((link) => (
             <li key={link.href}>
               <a href={link.href} className="nav-link text-[0.94rem] text-ink/65 transition-colors hover:text-ink">

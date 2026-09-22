@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Check, Link2, MoonStar } from 'lucide-react'
 import { PrimaryCTA, SectionLabel } from './Brand'
+import Reveal from './Reveal'
 import { groupIndian, indianShort, rupees } from '../lib/format'
 import { useAnimatedNumber } from '../lib/hooks'
 import { SEGMENT } from '../lib/campaign'
@@ -65,10 +66,12 @@ export default function Calculator() {
   return (
     <section id="calculator" className="border-t border-line bg-white py-20 sm:py-28">
       <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
-        <SectionLabel>The cost of silence</SectionLabel>
-        <h2 className="max-w-[18ch] text-[clamp(2rem,4.6vw,3.1rem)]">
-          Move two sliders. See the year you're giving away.
-        </h2>
+        <Reveal>
+          <SectionLabel>The cost of silence</SectionLabel>
+          <h2 className="max-w-[18ch] text-[clamp(2rem,4.6vw,3.1rem)]">
+            Move two sliders. See the year you're giving away.
+          </h2>
+        </Reveal>
 
         <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] lg:gap-16">
           {/* Inputs */}

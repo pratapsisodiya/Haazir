@@ -28,6 +28,10 @@ src/
     hooks.js               reduced motion, animated numbers, sticky-scroll activation
   components/
     Brand.jsx              jharokha mark, wordmark, buttons (all SVG, no image files)
+    Reveal.jsx             fades a block up as it enters view
+    ScrollProgress.jsx     the 2px reading-progress rule at the top
+    Conversation.jsx       plays a scripted thread out, message by message
+    Comparison.jsx         haazir vs an unofficial bot vs another hire
     Hero.jsx  Nav.jsx  Marquee.jsx  WhatItDoes.jsx  Faq.jsx
     Calculator.jsx  HowItWorks.jsx  Pricing.jsx  CallToAction.jsx  Footer.jsx
     Photo.jsx              warm overlay, lazy loading, graceful fallback
@@ -71,18 +75,17 @@ scripts/
   marquee captions name customer *segments* we build for, not clients.
 - Every run of text on the page clears WCAG AA against its actually-painted
   backdrop (verified by compositing each ancestor background, not by eye).
-- **Motion and decoration are used sparingly, on purpose, not as a "modern AI
-  product" signature.** No scroll-triggered fade/lift-ins, no floating or
-  breathing elements, no ambient glow behind every panel, no grain/noise
-  texture, no glassmorphism (translucent-plus-blur) anywhere — including the
-  sticky nav and mobile menu, which are solid white once they take a
-  background. The two terracotta glows that remain (top-left of the hero, and
-  behind the hero photo) are the ones the original brief actually asked for;
-  every other glow this codebase tried along the way got removed. What's left
-  is: a sticky nav, a working mobile menu, the sticky-scroll "how it works"
-  section (all functional, not decorative), a flat resting shadow on cards
-  (`.lift` in `index.css`), and a plain `hover:-translate-y-1` on pricing
-  cards — the "lift 4px on hover" the brief asked for, nothing more.
+- **Motion is restrained and has to earn its place.** Still banned: glassmorphism
+  (translucent-plus-blur) anywhere, grain/noise texture, ambient glow behind
+  every panel, and anything that floats or breathes on a loop. The only two
+  terracotta glows are the ones the original brief asked for — top-left of the
+  hero, and behind the hero photo.
+  What motion there is: a short fade-up as sections enter view (`Reveal`, 14px
+  and 600ms — the page settling, not an effect), a reading-progress rule, 26px
+  of parallax drift on the hero photo, and the conversation replaying itself.
+  Every one of them is off under `prefers-reduced-motion`, and none of them
+  gate content — a visitor who never sees an animation still reads the whole
+  page.
 
 ## Interaction that stayed
 
@@ -142,3 +145,25 @@ search traffic.
 Segment calculator defaults (`lib/segments.js`) are deliberately conservative.
 The model multiplies up quickly, and an opening figure that reads as hype costs
 more trust than a big number buys attention.
+
+## Motion, and how it fails safe
+
+`Reveal` starts its children at `opacity-0`, which is the one pattern here that
+could actually hide content, so it is worth knowing how it cannot:
+
+- `useInView` sets itself to visible when there is no `IntersectionObserver` at
+  all, rather than waiting for a callback that will never come.
+- The observer latches — once seen, always visible — so nothing flickers back
+  out on the way past.
+- Its threshold is `0` with a negative bottom `rootMargin`, not a fraction. A
+  section taller than the viewport can never show "15% of itself", so a
+  fractional threshold makes tall sections (the comparison table, the FAQ)
+  reveal late or not at all. The margin does the delaying instead, and behaves
+  the same at any height.
+- Under `prefers-reduced-motion` the transition collapses to nothing, so the
+  content appears instantly instead of animating.
+
+`Conversation` plays on a chain of timers. Under reduced motion it skips
+straight to the full thread — the exchange is the content, the timing is
+decoration — and the timers are cleared on unmount so a replay can never race a
+run that is already going.

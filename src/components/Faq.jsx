@@ -1,5 +1,6 @@
 import { Plus } from 'lucide-react'
 import { SectionLabel } from './Brand'
+import Reveal from './Reveal'
 
 /**
  * The questions that otherwise cost a round-trip each in a DM. Native
@@ -44,10 +45,12 @@ export default function Faq() {
   return (
     <section id="faq" className="border-t border-line bg-paper py-20 sm:py-28">
       <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
-        <SectionLabel>Straight answers</SectionLabel>
-        <h2 className="max-w-[18ch] text-[clamp(2rem,4.6vw,3.1rem)]">
-          The things everyone asks before they say yes.
-        </h2>
+        <Reveal>
+          <SectionLabel>Straight answers</SectionLabel>
+          <h2 className="max-w-[18ch] text-[clamp(2rem,4.6vw,3.1rem)]">
+            The things everyone asks before they say yes.
+          </h2>
+        </Reveal>
 
         <div className="mt-12 max-w-[52rem] divide-y divide-line border-y border-line">
           {QUESTIONS.map(({ q, a }) => (

@@ -6,6 +6,12 @@
  * Everything brand-level (the wordmark, the headline, the palette) stays fixed.
  * What changes is the subhead, the sample conversation, which segment the photo
  * strip leads with, and what the calculator opens tuned to.
+ *
+ * `thread` is the scripted exchange the Conversation section plays out. Each one
+ * is written to end the same way on purpose: the agent answers, books, and then
+ * hits something it should not decide — a discount, a diagnosis, a rate — and
+ * hands over. That hand-off is the part that earns trust, so it is the part the
+ * demo finishes on.
  */
 
 export const DEFAULT_SEGMENT = {
@@ -27,6 +33,27 @@ export const DEFAULT_SEGMENT = {
   leadImage: null,
   /** Calculator starting point — a plausible mid-size operation. */
   calculator: { enquiries: 45, ticket: 35_000 },
+  thread: {
+    opened: '11:42 pm, Sunday',
+    messages: [
+      { who: 'them', text: 'Is the Kundan set still available?' },
+      {
+        who: 'agent',
+        text: "Ji haan — it's in the Johari Bazaar store. Shall I hold it for you till tomorrow 6pm?",
+      },
+      { who: 'them', text: 'Haan rakh dijiye. Kitne ka hai?' },
+      {
+        who: 'agent',
+        text: 'The set is ₹1,84,000 with the matching earrings. Held under your name till 6pm tomorrow.',
+      },
+      { who: 'them', text: 'Thoda kam ho sakta hai?' },
+      {
+        who: 'agent',
+        text: "That one's not mine to decide — I'm putting Rajesh from the store on it now. He'll message you in the morning.",
+      },
+    ],
+    handover: 'Handed to a human at 11:44 pm',
+  },
 }
 
 export const SEGMENTS = [
@@ -44,6 +71,27 @@ export const SEGMENTS = [
     },
     leadImage: 'Jewellery showrooms',
     calculator: { enquiries: 25, ticket: 45_000 },
+    thread: {
+      opened: '11:42 pm, Sunday',
+      messages: [
+        { who: 'them', text: 'Is the Kundan set still available?' },
+        {
+          who: 'agent',
+          text: "Ji haan — it's in the Johari Bazaar store. Shall I hold it for you till tomorrow 6pm?",
+        },
+        { who: 'them', text: 'Haan rakh dijiye. Kitne ka hai?' },
+        {
+          who: 'agent',
+          text: 'The set is ₹1,84,000 with the matching earrings. Held under your name till 6pm tomorrow.',
+        },
+        { who: 'them', text: 'Thoda kam ho sakta hai?' },
+        {
+          who: 'agent',
+          text: "That one's not mine to decide — I'm putting Rajesh from the store on it now. He'll message you in the morning.",
+        },
+      ],
+      handover: 'Handed to a human at 11:44 pm',
+    },
   },
   {
     slug: 'clinics',
@@ -59,6 +107,24 @@ export const SEGMENTS = [
     },
     leadImage: 'Clinics & dental practices',
     calculator: { enquiries: 40, ticket: 2_500 },
+    thread: {
+      opened: '10:18 pm, Thursday',
+      messages: [
+        { who: 'them', text: 'Doctor sahab ka Saturday ka slot mil jayega?' },
+        { who: 'agent', text: 'Saturday 11:30 am khaali hai. Aapke naam se rakh doon?' },
+        { who: 'them', text: 'Haan kar dijiye. Consultation ki fees kitni hai?' },
+        {
+          who: 'agent',
+          text: 'Consultation ₹600 hai. Appointment confirm — Saturday 11:30 am. Ek din pehle reminder bhej doonga.',
+        },
+        { who: 'them', text: 'Mujhe do din se dard ho raha hai, koi dawai bata dijiye?' },
+        {
+          who: 'agent',
+          text: 'Ye main nahi bata sakta — dawai sirf doctor hi likhenge. Aapka Saturday ka slot rakha hai, aur main abhi clinic ko bata raha hoon.',
+        },
+      ],
+      handover: 'Handed to the front desk at 10:20 pm',
+    },
   },
   {
     slug: 'hotels',
@@ -74,6 +140,27 @@ export const SEGMENTS = [
     },
     leadImage: 'Hotels',
     calculator: { enquiries: 35, ticket: 9_000 },
+    thread: {
+      opened: '12:06 am, Saturday',
+      messages: [
+        { who: 'them', text: 'Do you have a room for 2 nights from the 14th?' },
+        {
+          who: 'agent',
+          text: 'Yes — a deluxe double is free on both nights. Shall I hold it while you check with your family?',
+        },
+        { who: 'them', text: 'What does it come to?' },
+        {
+          who: 'agent',
+          text: '₹6,500 a night including breakfast, so ₹13,000 for the two. Held for you till noon tomorrow.',
+        },
+        { who: 'them', text: 'Can you do 5,500 a night?' },
+        {
+          who: 'agent',
+          text: "Rates are the manager's call, not mine — I've flagged this to him and he'll message you first thing.",
+        },
+      ],
+      handover: 'Handed to the front desk at 12:08 am',
+    },
   },
   {
     slug: 'coaching',
@@ -89,6 +176,27 @@ export const SEGMENTS = [
     },
     leadImage: 'Coaching institutes',
     calculator: { enquiries: 40, ticket: 25_000 },
+    thread: {
+      opened: '11:05 pm, Tuesday',
+      messages: [
+        { who: 'them', text: 'NEET batch ki fees aur timing bata dijiye' },
+        {
+          who: 'agent',
+          text: 'Zaroor — morning batch 7–10, evening 5–8. Fee structure bhej doon, ya counselling ka slot rakh doon?',
+        },
+        { who: 'them', text: 'Dono bhej dijiye' },
+        {
+          who: 'agent',
+          text: 'Bhej diya. Full course ₹1,10,000, teen instalment mein bhi ho jata hai. Counselling Saturday 12 baje rakh di hai.',
+        },
+        { who: 'them', text: 'Scholarship ya koi discount milta hai kya?' },
+        {
+          who: 'agent',
+          text: 'Iska faisla Verma sir karte hain, main nahi. Unko abhi bata diya hai — kal subah aapko call karenge.',
+        },
+      ],
+      handover: 'Handed to the counselling desk at 11:07 pm',
+    },
   },
 ]
 

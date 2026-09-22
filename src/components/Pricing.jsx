@@ -1,4 +1,5 @@
 import { PrimaryCTA, SectionLabel } from './Brand'
+import Reveal from './Reveal'
 
 const PLANS = [
   {
@@ -30,10 +31,12 @@ export default function Pricing() {
   return (
     <section id="pricing" className="border-t border-line bg-white py-20 sm:py-28">
       <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
-        <SectionLabel>Pricing</SectionLabel>
-        <h2 className="max-w-[18ch] text-[clamp(2rem,4.6vw,3.1rem)]">
-          Two numbers and a pass-through.
-        </h2>
+        <Reveal>
+          <SectionLabel>Pricing</SectionLabel>
+          <h2 className="max-w-[18ch] text-[clamp(2rem,4.6vw,3.1rem)]">
+            Two numbers and a pass-through.
+          </h2>
+        </Reveal>
 
         <div className="mt-12 grid gap-5 md:grid-cols-3">
           {PLANS.map((plan) => (

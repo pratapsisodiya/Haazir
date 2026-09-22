@@ -110,3 +110,114 @@ export function useScrolled(offset = 8) {
 
   return scrolled
 }
+
+/**
+ * True once the element has been scrolled into view. Latches — it never flips
+ * back — so content that has appeared stays put instead of flickering.
+ */
+// threshold 0 rather than a fraction: a section taller than the viewport can
+// never show "15% of itself", so a fraction makes tall content reveal late (or
+// never). The negative bottom margin is what delays the trigger instead, and it
+// behaves the same whatever the element's height.
+export function useInView({ rootMargin = '0px 0px -15% 0px', threshold = 0 } = {}) {
+  const ref = useRef(null)
+  const [inView, setInView] = useState(false)
+
+  useEffect(() => {
+    const node = ref.current
+    // No observer (old browser, or the node never mounted): show it rather than
+    // leaving content stuck invisible.
+    if (!node || typeof IntersectionObserver === 'undefined') {
+      setInView(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin, threshold },
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [rootMargin, threshold])
+
+  return [ref, inView]
+}
+
+/** How far down the page we are, 0–1. Drives the reading-progress bar. */
+export function useScrollProgress() {
+  const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    let frame = 0
+
+    const measure = () => {
+      frame = 0
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight
+      setProgress(scrollable > 0 ? Math.min(1, window.scrollY / scrollable) : 0)
+    }
+
+    // rAF-throttled: scroll fires far more often than we can usefully paint.
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(measure)
+    }
+
+    measure()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      if (frame) cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [])
+
+  return progress
+}
+
+/**
+ * Drifts an element against the scroll by at most `distance` px. Returns 0
+ * under reduced motion, so the caller renders it stationary.
+ */
+export function useParallax(distance = 40) {
+  const reduced = usePrefersReducedMotion()
+  const ref = useRef(null)
+  const [offset, setOffset] = useState(0)
+
+  useEffect(() => {
+    if (reduced) {
+      setOffset(0)
+      return
+    }
+    const node = ref.current
+    if (!node) return
+
+    let frame = 0
+    const measure = () => {
+      frame = 0
+      const box = node.getBoundingClientRect()
+      // -1 (element below the fold) → 1 (above it)
+      const centre = (box.top + box.height / 2 - window.innerHeight / 2) / window.innerHeight
+      setOffset(Math.max(-1, Math.min(1, centre)) * distance)
+    }
+
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(measure)
+    }
+
+    measure()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      if (frame) cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [distance, reduced])
+
+  return [ref, offset]
+}

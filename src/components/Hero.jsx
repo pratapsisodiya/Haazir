@@ -3,8 +3,13 @@ import { GhostCTA, PrimaryCTA } from './Brand'
 import Photo from './Photo'
 import { HERO_IMAGE } from '../lib/images'
 import { SEGMENT } from '../lib/campaign'
+import { useParallax } from '../lib/hooks'
 
 export default function Hero() {
+  // A few px of drift on the window photo — enough to feel alive, not enough
+  // to notice as an effect. Returns 0 under reduced motion.
+  const [photoRef, drift] = useParallax(26)
+
   return (
     <section id="top" className="relative overflow-hidden bg-paper">
       {/* 68px grid, radially masked so it fades at the edges */}
@@ -56,13 +61,15 @@ export default function Hero() {
               className="pointer-events-none absolute -inset-8 rounded-[3rem] bg-clay/14 blur-[70px]"
               aria-hidden="true"
             />
-            <Photo
-              image={HERO_IMAGE}
-              priority
-              sizes="(min-width: 1024px) 34rem, 90vw"
-              className="relative aspect-4/5 rounded-[1.75rem] ring-1 ring-ink/10"
-              overlay="from-clay/14 via-transparent to-ink/20"
-            />
+            <div ref={photoRef} style={{ transform: `translate3d(0, ${drift}px, 0)` }}>
+              <Photo
+                image={HERO_IMAGE}
+                priority
+                sizes="(min-width: 1024px) 34rem, 90vw"
+                className="relative aspect-4/5 rounded-[1.75rem] ring-1 ring-ink/10"
+                overlay="from-clay/14 via-transparent to-ink/20"
+              />
+            </div>
 
             {/* Message card, overlapping the bottom-left corner */}
             <figure className="absolute -bottom-7 -left-4 w-[15.5rem] rounded-2xl border border-line bg-white p-3.5 shadow-[0_18px_44px_-14px_rgb(14_16_19_/_0.2)] sm:-left-8 sm:w-[17.5rem]">

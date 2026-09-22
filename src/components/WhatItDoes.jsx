@@ -1,5 +1,6 @@
 import { CalendarCheck, Check, Languages, ShieldCheck, UserRound } from 'lucide-react'
 import { SectionLabel } from './Brand'
+import Reveal from './Reveal'
 
 const SLOTS = [
   { time: '11:30 am', label: 'Tue' },
@@ -21,10 +22,12 @@ export default function WhatItDoes() {
   return (
     <section id="what-it-does" className="bg-paper py-20 sm:py-28">
       <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
-        <SectionLabel>What your customer gets</SectionLabel>
-        <h2 className="max-w-[20ch] text-[clamp(2rem,4.6vw,3.1rem)]">
-          An answer in seconds, from someone who sounds like your shop.
-        </h2>
+        <Reveal>
+          <SectionLabel>What your customer gets</SectionLabel>
+          <h2 className="max-w-[20ch] text-[clamp(2rem,4.6vw,3.1rem)]">
+            An answer in seconds, from someone who sounds like your shop.
+          </h2>
+        </Reveal>
 
         <div className="mt-12 grid gap-4 sm:gap-5 lg:grid-cols-4 lg:grid-rows-[auto_auto]">
           {/* Wide — scheduling */}
