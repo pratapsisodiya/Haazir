@@ -9,10 +9,10 @@ const links = [
 
 export default function Nav() {
   return (
-    <header className="relative z-20">
-      <nav className="mx-auto flex max-w-[1180px] items-center justify-between px-5 py-6 sm:px-8">
+    <header className="relative z-20 border-b border-line/70">
+      <nav className="mx-auto flex max-w-[1180px] items-center justify-between px-5 py-5 sm:px-8">
         <a href="#top" className="flex items-center" aria-label="haazir — home">
-          <Wordmark tone="light" size={32} />
+          <Wordmark size={32} />
         </a>
 
         <ul className="hidden items-center gap-8 lg:flex">
@@ -20,7 +20,7 @@ export default function Nav() {
             <li key={link.href}>
               <a
                 href={link.href}
-                className="text-[0.94rem] text-paper/60 transition-colors hover:text-paper"
+                className="text-[0.94rem] text-ink/65 transition-colors hover:text-clay"
               >
                 {link.label}
               </a>

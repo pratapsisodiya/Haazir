@@ -23,7 +23,7 @@ export default function Calculator() {
   const short = indianShort(animatedValue)
 
   return (
-    <section id="calculator" className="bg-white py-20 sm:py-28">
+    <section id="calculator" className="border-t border-line bg-white py-20 sm:py-28">
       <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
         <SectionLabel>The cost of silence</SectionLabel>
         <h2 className="max-w-[18ch] text-[clamp(2rem,4.6vw,3.1rem)]">
@@ -58,7 +58,7 @@ export default function Calculator() {
               className="mt-10"
             />
 
-            <p className="mt-10 max-w-[46ch] border-t border-line pt-6 text-[0.84rem] leading-relaxed text-ink/45">
+            <p className="mt-10 max-w-[46ch] border-t border-line pt-6 text-[0.84rem] leading-relaxed text-ink/60">
               Assumptions: {Math.round(AFTER_HOURS_SHARE * 100)}% of enquiries arrive
               outside working hours, across {DAYS} days a month.{' '}
               {Math.round(RECOVERY_RATE * 100)}% of those become customers when they get
@@ -68,18 +68,18 @@ export default function Calculator() {
           </div>
 
           {/* Results */}
-          <div className="relative overflow-hidden rounded-[1.75rem] bg-ink p-7 text-paper sm:p-9">
+          <div className="relative overflow-hidden rounded-[1.75rem] border border-line bg-stone p-7 lift sm:p-9">
             <div
-              className="pointer-events-none absolute inset-0 grid-bg grid-mask-panel opacity-60"
+              className="pointer-events-none absolute inset-0 grid-bg grid-mask-panel opacity-70"
               aria-hidden="true"
             />
             <div
-              className="pointer-events-none absolute -top-24 -right-20 h-64 w-64 rounded-full bg-clay/18 blur-[90px]"
+              className="pointer-events-none absolute -top-24 -right-20 h-64 w-64 rounded-full bg-clay/10 blur-[90px]"
               aria-hidden="true"
             />
 
             <div className="relative" aria-live="polite">
-              <p className="flex items-center gap-2.5 text-[0.75rem] tracking-[0.16em] text-paper/45 uppercase">
+              <p className="flex items-center gap-2.5 text-[0.75rem] font-medium tracking-[0.16em] text-ink/60 uppercase">
                 <MoonStar className="h-4 w-4 text-clay" strokeWidth={1.7} />
                 Every month, roughly
               </p>
@@ -97,18 +97,18 @@ export default function Calculator() {
                 />
               </dl>
 
-              <div className="mt-8 border-t border-white/10 pt-7">
-                <dt className="text-[0.95rem] text-paper/55">Revenue walking away</dt>
+              <div className="mt-8 border-t border-line pt-7">
+                <dt className="text-[0.95rem] text-ink/65">Revenue walking away</dt>
                 <dd className="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <span className="tabular text-[clamp(2.6rem,7vw,3.9rem)] leading-none font-medium tracking-[-0.045em] text-clay">
+                  <span className="tabular text-[clamp(2.6rem,7vw,3.9rem)] leading-none font-medium tracking-[-0.045em] text-clay-deep">
                     &#8377;{short.value}
                   </span>
                   {short.unit && (
-                    <span className="text-[1.35rem] font-medium tracking-[-0.03em] text-clay/80">
+                    <span className="text-[1.35rem] font-medium tracking-[-0.03em] text-clay-deep">
                       {short.unit}
                     </span>
                   )}
-                  <span className="w-full text-[0.9rem] text-paper/40">
+                  <span className="w-full text-[0.9rem] text-ink/60">
                     {rupees(animatedValue)} a month &middot; {rupees(animatedValue * 12)} a year
                   </span>
                 </dd>
@@ -123,11 +123,11 @@ export default function Calculator() {
 
 function Stat({ term, value, unit }) {
   return (
-    <div className="flex flex-col gap-1 border-b border-white/[0.07] pb-5 last:border-0 last:pb-0 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-      <dt className="text-[0.95rem] text-paper/55">{term}</dt>
+    <div className="flex flex-col gap-1 border-b border-line pb-5 last:border-0 last:pb-0 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+      <dt className="text-[0.95rem] text-ink/65">{term}</dt>
       <dd className="tabular shrink-0 text-[1.6rem] font-medium tracking-[-0.035em]">
         {value}
-        <span className="ml-1.5 text-[0.85rem] font-normal tracking-normal text-paper/35">
+        <span className="ml-1.5 text-[0.85rem] font-normal tracking-normal text-ink/60">
           {unit}
         </span>
       </dd>
@@ -139,12 +139,12 @@ function Slider({ id, label, value, min, max, step, onChange, display, suffix, c
   return (
     <div className={className}>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <label htmlFor={id} className="text-[1.02rem] text-ink/75">
+        <label htmlFor={id} className="text-[1.02rem] text-ink/80">
           {label}
         </label>
         <p className="tabular text-[1.3rem] font-medium tracking-[-0.035em]">
           {display}
-          <span className="ml-1.5 text-[0.82rem] font-normal tracking-normal text-ink/40">
+          <span className="ml-1.5 text-[0.82rem] font-normal tracking-normal text-ink/60">
             {suffix}
           </span>
         </p>
@@ -162,7 +162,7 @@ function Slider({ id, label, value, min, max, step, onChange, display, suffix, c
         onChange={(e) => onChange(Number(e.target.value))}
       />
 
-      <div className="flex justify-between text-[0.78rem] text-ink/35">
+      <div className="flex justify-between text-[0.78rem] text-ink/60">
         <span>{id === 'ticket' ? rupees(min) : groupIndian(min)}</span>
         <span>{id === 'ticket' ? rupees(max) : groupIndian(max)}</span>
       </div>

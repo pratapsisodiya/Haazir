@@ -39,17 +39,17 @@ export default function Pricing() {
           {PLANS.map((plan) => (
             <article
               key={plan.name}
-              className={`group relative flex flex-col rounded-[1.5rem] border bg-paper p-7 transition-transform duration-200 hover:-translate-y-1 sm:p-8 ${
+              className={`group relative flex flex-col rounded-[1.5rem] border bg-paper p-7 lift transition-transform duration-200 hover:-translate-y-1 sm:p-8 ${
                 plan.featured ? 'border-clay' : 'border-line'
               }`}
             >
               {plan.badge && (
-                <span className="absolute -top-3 left-7 rounded-full bg-clay px-3 py-1 text-[0.72rem] font-medium tracking-[0.1em] text-paper uppercase">
+                <span className="absolute -top-3 left-7 rounded-full bg-clay-deep px-3 py-1 text-[0.72rem] font-medium tracking-[0.1em] text-white uppercase">
                   {plan.badge}
                 </span>
               )}
 
-              <h3 className="text-[1.05rem] font-medium tracking-[0.02em] text-ink/50 uppercase">
+              <h3 className="text-[1.05rem] font-medium tracking-[0.02em] text-ink/60 uppercase">
                 {plan.name}
               </h3>
 
@@ -57,10 +57,10 @@ export default function Pricing() {
                 <span className="tabular text-[clamp(2.1rem,4vw,2.7rem)] leading-none font-medium tracking-[-0.045em]">
                   {plan.price}
                 </span>
-                <span className="text-[0.92rem] text-ink/45">{plan.cadence}</span>
+                <span className="text-[0.92rem] text-ink/60">{plan.cadence}</span>
               </p>
 
-              <p className="mt-5 text-[0.98rem] text-ink/58">{plan.body}</p>
+              <p className="mt-5 text-[0.98rem] text-ink/65">{plan.body}</p>
 
               <ul className="mt-6 space-y-2.5 border-t border-line pt-6 text-[0.94rem] text-ink/65">
                 {plan.points.map((point) => (
@@ -76,7 +76,7 @@ export default function Pricing() {
 
         <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
           <PrimaryCTA>Ask what yours would cost</PrimaryCTA>
-          <p className="text-[0.92rem] text-ink/45">
+          <p className="text-[0.92rem] text-ink/60">
             No retainer lock-in. Cancel the monthly whenever you like.
           </p>
         </div>

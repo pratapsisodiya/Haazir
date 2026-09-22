@@ -3,11 +3,13 @@
 @theme {
   --color-clay: #d2603f;
   --color-clay-soft: #e08a6e;
+  --color-clay-deep: #a8482b;
   --color-ink: #0e1013;
   --color-ink-soft: #17191d;
   --color-paper: #f7f7f4;
   --color-line: #e2dfd8;
   --color-forest: #123a2f;
+  --color-stone: #f1efe9;
 
   --font-sans: 'Schibsted Grotesk', ui-sans-serif, system-ui, -apple-system,
     'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -63,10 +65,10 @@
 @utility grid-bg {
   background-image: linear-gradient(
       to right,
-      rgb(255 255 255 / 0.075) 1px,
+      rgb(14 16 19 / 0.055) 1px,
       transparent 1px
     ),
-    linear-gradient(to bottom, rgb(255 255 255 / 0.075) 1px, transparent 1px);
+    linear-gradient(to bottom, rgb(14 16 19 / 0.055) 1px, transparent 1px);
   background-size: 68px 68px;
 }
 
@@ -200,6 +202,12 @@
 
 .haazir-range:active::-webkit-slider-thumb {
   transform: scale(1.1);
+}
+
+@utility lift {
+  box-shadow:
+    0 1px 2px rgb(14 16 19 / 0.04),
+    0 14px 34px -16px rgb(14 16 19 / 0.1);
 }
 
 .tabular {

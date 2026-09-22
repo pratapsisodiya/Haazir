@@ -33,26 +33,32 @@ export const HERO_IMAGE = {
 export const MARQUEE_IMAGES = [
   {
     ...photoSet('1515562141207-7a88fb7ce338', 'jewellery-showroom-display-case', 900, 600),
+    label: 'Jewellery showrooms',
     alt: 'Gold necklaces arranged on velvet inside the lit glass display case of a jewellery showroom.',
   },
   {
     ...photoSet('1583939003579-730e3918a45a', 'rajasthani-wedding-mandap-night', 900, 600),
+    label: 'Wedding venues',
     alt: 'A marigold-draped wedding mandap at night, strung with warm lights, guests seated beyond it.',
   },
   {
     ...photoSet('1631217868264-e5b90bb7e133', 'modern-clinic-reception-desk', 900, 600),
+    label: 'Clinics & dental practices',
     alt: 'The reception counter of a modern clinic, pale wood and soft daylight, waiting chairs to one side.',
   },
   {
     ...photoSet('1524178232363-1fb2b075b655', 'coaching-classroom-students', 900, 600),
+    label: 'Coaching institutes',
     alt: 'Rows of desks in a coaching-institute classroom, a whiteboard at the front and afternoon light from high windows.',
   },
   {
     ...photoSet('1515630278258-407f66498911', 'udaipur-lake-palace-dawn', 900, 600),
+    label: 'Resorts & travel desks',
     alt: 'Lake Pichola in Udaipur at dawn, palace walls and ghats reflected in flat water under a pale sky.',
   },
   {
     ...photoSet('1551882547-ff40c63fe5fa', 'hotel-front-desk-lobby', 900, 600),
+    label: 'Hotels',
     alt: 'A hotel front desk in a quiet lobby, brass lamps lit and a ledger open on the counter.',
   },
 ]

@@ -27,15 +27,11 @@ export function LogoMark({ size = 34, className = '' }) {
   )
 }
 
-export function Wordmark({ size = 34, tone = 'dark', className = '' }) {
+export function Wordmark({ size = 34, className = '' }) {
   return (
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <LogoMark size={size} />
-      <span
-        className={`text-[1.35rem] font-medium tracking-[-0.045em] lowercase ${
-          tone === 'dark' ? 'text-ink' : 'text-paper'
-        }`}
-      >
+      <span className="text-[1.35rem] font-medium tracking-[-0.045em] lowercase text-ink">
         haazir
       </span>
     </span>
@@ -60,7 +56,7 @@ export function PrimaryCTA({ children = 'Start on WhatsApp', className = '', hre
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={`${base} bg-clay text-paper hover:bg-[#bd5236] hover:-translate-y-0.5 active:translate-y-0 ${className}`}
+      className={`${base} bg-clay-deep text-white shadow-[0_10px_24px_-12px_rgb(168_72_43_/_0.6)] hover:-translate-y-0.5 hover:bg-[#8f3c23] active:translate-y-0 ${className}`}
     >
       <WhatsAppGlyph />
       {children}
@@ -68,25 +64,20 @@ export function PrimaryCTA({ children = 'Start on WhatsApp', className = '', hre
   )
 }
 
-export function GhostCTA({ children, href = '#pricing', tone = 'light', className = '' }) {
-  const tones =
-    tone === 'light'
-      ? 'border-white/18 text-paper hover:border-white/40 hover:bg-white/5'
-      : 'border-line text-ink hover:border-ink/30 hover:bg-ink/[0.03]'
+export function GhostCTA({ children, href = '#pricing', className = '' }) {
   return (
-    <a href={href} className={`${base} border ${tones} hover:-translate-y-0.5 ${className}`}>
+    <a
+      href={href}
+      className={`${base} border border-line bg-white text-ink hover:-translate-y-0.5 hover:border-ink/25 ${className}`}
+    >
       {children}
     </a>
   )
 }
 
-export function SectionLabel({ children, tone = 'dark' }) {
+export function SectionLabel({ children }) {
   return (
-    <p
-      className={`mb-5 flex items-center gap-2.5 text-[0.75rem] font-medium tracking-[0.16em] uppercase ${
-        tone === 'dark' ? 'text-ink/45' : 'text-paper/45'
-      }`}
-    >
+    <p className="mb-5 flex items-center gap-2.5 text-[0.75rem] font-medium tracking-[0.16em] text-ink/60 uppercase">
       <span className="h-px w-6 bg-clay" aria-hidden="true" />
       {children}
     </p>

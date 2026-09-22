@@ -47,9 +47,20 @@ src/
 
 ## Design rules this codebase holds to
 
-- Terracotta `#D2603F` is an accent only — buttons, one word in the hero
-  headline, icon strokes, one card border. Never a background wash.
+- The page is a single light theme end to end: `#F7F7F4` sections alternating
+  with `#FFFFFF`, and `#F1EFE9` ("stone") for the panels that need to sit apart
+  — the compliance card, the calculator result and the closing CTA.
+- Terracotta is an accent only — buttons, one word in the hero headline, icon
+  strokes, one card border. Never a background wash.
+- Two terracotta shades, for contrast rather than decoration: `#D2603F` for
+  large type, icon strokes, borders and glows; `#A8482B` (`clay-deep`) for
+  filled buttons and any terracotta text under 24px. `#D2603F` only reaches
+  3.6:1 on off-white and 3.8:1 behind white text, so it fails WCAG AA at body
+  sizes; `#A8482B` clears it at 5.4:1 and 5.7:1.
 - Headlines: weight 500, `-0.04em` tracking, 0.95–1.05 leading. Body 17px/1.65.
 - Nothing animates under `prefers-reduced-motion: reduce` — the marquee stops,
   the counters snap, scrolling is not smoothed.
-- No fake testimonials, client logos or statistics anywhere on the page.
+- No fake testimonials, client logos or statistics anywhere on the page. The
+  marquee captions name customer *segments* we build for, not clients.
+- Every run of text on the page clears WCAG AA against its actually-painted
+  backdrop (verified by compositing each ancestor background, not by eye).

@@ -32,7 +32,7 @@ export default function HowItWorks() {
             <h2 className="max-w-[16ch] text-[clamp(2rem,4.6vw,3.1rem)]">
               Three weeks, and nobody learns new software.
             </h2>
-            <p className="mt-6 max-w-[38ch] text-ink/58">
+            <p className="mt-6 max-w-[38ch] text-ink/65">
               You keep the same number, the same team, the same way of speaking to
               customers. We do the part that takes an engineer.
             </p>
@@ -61,13 +61,13 @@ export default function HowItWorks() {
                   i === active ? 'opacity-100' : 'lg:opacity-40'
                 }`}
               >
-                <p className="tabular text-[0.82rem] font-medium tracking-[0.2em] text-clay">
+                <p className="tabular text-[0.82rem] font-medium tracking-[0.2em] text-clay-deep">
                   {step.n}
                 </p>
                 <h3 className="mt-4 max-w-[18ch] text-[clamp(1.7rem,3.4vw,2.4rem)]">
                   {step.title}
                 </h3>
-                <p className="mt-5 max-w-[46ch] text-ink/58">{step.body}</p>
+                <p className="mt-5 max-w-[46ch] text-ink/65">{step.body}</p>
               </li>
             ))}
           </ol>
