@@ -33,7 +33,7 @@ export default function Nav() {
     <header
       className={`sticky top-0 z-40 transition-[background-color,border-color,box-shadow] duration-300 ${
         scrolled || open
-          ? 'border-b border-line bg-white/85 shadow-[0_1px_0_rgb(14_16_19_/_0.02),0_12px_28px_-20px_rgb(14_16_19_/_0.18)] backdrop-blur-md'
+          ? 'border-b border-line bg-white shadow-[0_1px_0_rgb(14_16_19_/_0.02),0_12px_28px_-20px_rgb(14_16_19_/_0.18)]'
           : 'border-b border-transparent bg-transparent'
       }`}
     >
@@ -76,7 +76,7 @@ export default function Nav() {
       {open && (
         <div
           id="mobile-menu"
-          className="animate-fade-down border-t border-line bg-white/97 px-5 pt-2 pb-6 backdrop-blur-md lg:hidden"
+          className="animate-fade-down border-t border-line bg-white px-5 pt-2 pb-6 lg:hidden"
         >
           <ul className="flex flex-col divide-y divide-line">
             {links.map((link) => (

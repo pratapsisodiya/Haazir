@@ -56,7 +56,7 @@ export function PrimaryCTA({ children = 'Start on WhatsApp', className = '', hre
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={`${base} bg-clay-deep text-white shadow-[0_10px_24px_-12px_rgb(168_72_43_/_0.6)] hover:-translate-y-0.5 hover:bg-[#8f3c23] hover:shadow-[0_14px_30px_-12px_rgb(168_72_43_/_0.7)] active:translate-y-0 ${className}`}
+      className={`${base} bg-clay-deep text-white shadow-[0_6px_14px_-8px_rgb(168_72_43_/_0.5)] hover:-translate-y-0.5 hover:bg-[#8f3c23] active:translate-y-0 ${className}`}
     >
       <WhatsAppGlyph />
       {children}
@@ -68,22 +68,10 @@ export function GhostCTA({ children, href = '#pricing', className = '' }) {
   return (
     <a
       href={href}
-      className={`${base} border border-line bg-white text-ink hover:-translate-y-0.5 hover:border-ink/25 hover:shadow-[0_10px_24px_-16px_rgb(14_16_19_/_0.3)] active:translate-y-0 ${className}`}
+      className={`${base} border border-line bg-white text-ink hover:-translate-y-0.5 hover:border-ink/25 active:translate-y-0 ${className}`}
     >
       {children}
     </a>
-  )
-}
-
-/** A soft terracotta-tinted tile behind a feature icon. */
-export function IconTile({ icon: Icon, size = 44, className = '' }) {
-  return (
-    <span
-      className={`inline-flex shrink-0 items-center justify-center rounded-xl bg-clay/10 text-clay-deep ring-1 ring-clay/15 ${className}`}
-      style={{ width: size, height: size }}
-    >
-      <Icon className="h-[46%] w-[46%]" strokeWidth={1.7} />
-    </span>
   )
 }
 

@@ -110,30 +110,3 @@ export function useScrolled(offset = 8) {
 
   return scrolled
 }
-
-/** Adds a class once the element has been scrolled into view, for entrances. */
-export function useReveal(options = {}) {
-  const ref = useRef(null)
-  const [shown, setShown] = useState(false)
-
-  useEffect(() => {
-    const node = ref.current
-    if (!node || typeof IntersectionObserver === 'undefined') {
-      setShown(true)
-      return
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setShown(true)
-          observer.disconnect()
-        }
-      },
-      { rootMargin: '0px 0px -12% 0px', threshold: 0.15, ...options },
-    )
-    observer.observe(node)
-    return () => observer.disconnect()
-  }, [])
-
-  return [ref, shown]
-}

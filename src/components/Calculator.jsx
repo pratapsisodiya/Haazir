@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { MoonStar } from 'lucide-react'
 import { SectionLabel } from './Brand'
-import Reveal from './Reveal'
 import { groupIndian, indianShort, rupees } from '../lib/format'
 import { useAnimatedNumber } from '../lib/hooks'
 
@@ -26,16 +25,14 @@ export default function Calculator() {
   return (
     <section id="calculator" className="border-t border-line bg-white py-20 sm:py-28">
       <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
-        <Reveal>
-          <SectionLabel>The cost of silence</SectionLabel>
-          <h2 className="max-w-[18ch] text-[clamp(2rem,4.6vw,3.1rem)]">
-            Move two sliders. See the year you're giving away.
-          </h2>
-        </Reveal>
+        <SectionLabel>The cost of silence</SectionLabel>
+        <h2 className="max-w-[18ch] text-[clamp(2rem,4.6vw,3.1rem)]">
+          Move two sliders. See the year you're giving away.
+        </h2>
 
         <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] lg:gap-16">
           {/* Inputs */}
-          <Reveal delay={80}>
+          <div>
             <Slider
               id="enquiries"
               label="Enquiries you get in a day"
@@ -68,19 +65,12 @@ export default function Calculator() {
               an answer within a minute instead of the next morning. Your own numbers
               will differ — we'd rather read your actual WhatsApp history than guess.
             </p>
-          </Reveal>
+          </div>
 
           {/* Results */}
-          <Reveal
-            delay={160}
-            className="relative overflow-hidden rounded-[1.75rem] border border-line bg-stone p-7 lift sm:p-9"
-          >
+          <div className="relative overflow-hidden rounded-[1.75rem] border border-line bg-stone p-7 lift sm:p-9">
             <div
               className="pointer-events-none absolute inset-0 grid-bg grid-mask-panel opacity-70"
-              aria-hidden="true"
-            />
-            <div
-              className="pointer-events-none absolute -top-24 -right-20 h-64 w-64 rounded-full bg-clay/10 blur-[90px]"
               aria-hidden="true"
             />
 
@@ -120,7 +110,7 @@ export default function Calculator() {
                 </dd>
               </div>
             </div>
-          </Reveal>
+          </div>
         </div>
       </div>
     </section>

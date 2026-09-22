@@ -1,5 +1,4 @@
 import Photo from './Photo'
-import Reveal from './Reveal'
 import { MARQUEE_IMAGES } from '../lib/images'
 
 /**
@@ -15,11 +14,9 @@ export default function Marquee() {
       aria-labelledby="who-for"
     >
       <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
-        <Reveal>
-          <h2 id="who-for" className="text-[0.75rem] font-medium tracking-[0.16em] text-ink/60 uppercase">
-            Who we build for
-          </h2>
-        </Reveal>
+        <h2 id="who-for" className="text-[0.75rem] font-medium tracking-[0.16em] text-ink/60 uppercase">
+          Who we build for
+        </h2>
       </div>
 
       <div className="animate-marquee mt-8 flex w-max gap-4 sm:gap-5">
@@ -29,16 +26,15 @@ export default function Marquee() {
             <figure
               key={`${image.src}-${i}`}
               aria-hidden={duplicate || undefined}
-              className="group relative w-[17rem] shrink-0 sm:w-[25rem]"
+              className="relative w-[17rem] shrink-0 sm:w-[25rem]"
             >
               <Photo
                 image={image}
                 sizes="(min-width: 640px) 25rem, 17rem"
                 className="aspect-3/2 rounded-2xl"
-                imgClassName="transition-transform duration-500 group-hover:scale-[1.06]"
                 overlay="from-clay/12 via-transparent to-ink/35"
               />
-              <figcaption className="absolute bottom-3 left-3 rounded-full bg-white/92 px-3 py-1 text-[0.78rem] font-medium text-ink/80 backdrop-blur-sm">
+              <figcaption className="absolute bottom-3 left-3 rounded-full bg-white px-3 py-1 text-[0.78rem] font-medium text-ink/80">
                 {image.label}
               </figcaption>
             </figure>

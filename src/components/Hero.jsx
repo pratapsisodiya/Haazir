@@ -17,7 +17,7 @@ export default function Hero() {
       <div className="relative mx-auto max-w-[1180px] px-5 pt-12 pb-20 sm:px-8 lg:pt-16 lg:pb-28">
         <div className="grid items-center gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.82fr)]">
           {/* Left column */}
-          <div className="animate-hero-rise">
+          <div>
             <p className="inline-flex items-center gap-2.5 rounded-full border border-line bg-white py-1.5 pr-4 pl-3 text-[0.8rem] text-ink/70 lift">
               <span className="relative flex h-2 w-2 shrink-0 items-center justify-center">
                 <span className="animate-ring absolute h-2 w-2 rounded-full bg-[#16a34a]" aria-hidden="true" />
@@ -50,7 +50,7 @@ export default function Hero() {
           </div>
 
           {/* Right column — the window */}
-          <div className="animate-hero-rise relative mx-auto w-full max-w-[26rem] [animation-delay:120ms] lg:max-w-none">
+          <div className="relative mx-auto w-full max-w-[26rem] lg:max-w-none">
             <div
               className="pointer-events-none absolute -inset-8 rounded-[3rem] bg-clay/14 blur-[70px]"
               aria-hidden="true"
@@ -63,8 +63,8 @@ export default function Hero() {
               overlay="from-clay/14 via-transparent to-ink/20"
             />
 
-            {/* Floating message card, overlapping the bottom-left corner */}
-            <figure className="animate-float absolute -bottom-7 -left-4 w-[15.5rem] rounded-2xl border border-line bg-white/95 p-3.5 shadow-[0_18px_44px_-14px_rgb(14_16_19_/_0.25)] backdrop-blur-sm sm:-left-8 sm:w-[17.5rem]">
+            {/* Message card, overlapping the bottom-left corner */}
+            <figure className="absolute -bottom-7 -left-4 w-[15.5rem] rounded-2xl border border-line bg-white p-3.5 shadow-[0_18px_44px_-14px_rgb(14_16_19_/_0.2)] sm:-left-8 sm:w-[17.5rem]">
               <figcaption className="mb-2.5 flex items-center gap-2 text-[0.7rem] tracking-[0.12em] text-ink/60 uppercase">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" aria-hidden="true" />
                 11:42 pm

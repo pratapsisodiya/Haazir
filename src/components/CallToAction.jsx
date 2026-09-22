@@ -1,19 +1,11 @@
 import { JharokhaArch, PrimaryCTA } from './Brand'
-import Reveal from './Reveal'
 
 export default function CallToAction() {
   return (
     <section className="bg-paper px-5 pt-6 pb-20 sm:px-8 sm:pb-28">
-      <Reveal
-        as="div"
-        className="grain relative mx-auto max-w-[1180px] overflow-hidden rounded-[2rem] border border-line bg-stone px-6 py-20 text-center lift-md sm:px-10 sm:py-24"
-      >
+      <div className="relative mx-auto max-w-[1180px] overflow-hidden rounded-[2rem] border border-line bg-stone px-6 py-20 text-center lift sm:px-10 sm:py-24">
         <div
           className="pointer-events-none absolute inset-0 grid-bg grid-mask-panel opacity-70"
-          aria-hidden="true"
-        />
-        <div
-          className="pointer-events-none absolute -top-28 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-clay/11 blur-[100px]"
           aria-hidden="true"
         />
 
@@ -36,7 +28,7 @@ export default function CallToAction() {
             We answer in Hindi or English, usually within the hour.
           </p>
         </div>
-      </Reveal>
+      </div>
     </section>
   )
 }
