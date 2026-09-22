@@ -12,7 +12,7 @@
  * The JS bundle is shared and unchanged — it reads the path at runtime
  * (src/lib/campaign.js) and renders the matching copy.
  */
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { SEGMENTS } from '../src/lib/segments.js'
@@ -51,7 +51,9 @@ for (const segment of SEGMENTS) {
   page = setTag(page, 'name', 'twitter:description', description)
   page = setTag(page, 'name', 'twitter:image', `${SITE}/og-${segment.slug}.png`)
 
-  mkdirSync(resolve(DIST, segment.slug), { recursive: true })
-  writeFileSync(resolve(DIST, segment.slug, 'index.html'), page)
-  console.log(`wrote dist/${segment.slug}/index.html`)
+  // Flat files, not slug/index.html: paired with "cleanUrls" in vercel.json this
+  // serves /jewellers directly. A directory index only answered on /jewellers/
+  // — and nobody pastes a trailing slash into a WhatsApp message.
+  writeFileSync(resolve(DIST, `${segment.slug}.html`), page)
+  console.log(`wrote dist/${segment.slug}.html`)
 }
