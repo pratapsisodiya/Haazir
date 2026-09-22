@@ -95,6 +95,22 @@ export function useActiveInViewport(count) {
   return [active, refs]
 }
 
+/** True once the page has scrolled past `offset` — drives the nav's blur-on-scroll. */
+export function useScrolled(offset = 8) {
+  const [scrolled, setScrolled] = useState(() =>
+    typeof window === 'undefined' ? false : window.scrollY > offset,
+  )
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > offset)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [offset])
+
+  return scrolled
+}
+
 /** Adds a class once the element has been scrolled into view, for entrances. */
 export function useReveal(options = {}) {
   const ref = useRef(null)

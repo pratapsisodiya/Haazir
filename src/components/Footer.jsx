@@ -12,7 +12,7 @@ export default function Footer() {
 
         <a
           href={`mailto:${EMAIL}`}
-          className="text-[0.95rem] text-ink/60 underline decoration-line underline-offset-4 transition-colors hover:text-clay hover:decoration-clay"
+          className="text-[0.95rem] text-ink/60 underline decoration-line underline-offset-4 transition-colors hover:text-clay-deep hover:decoration-clay-deep"
         >
           {EMAIL}
         </a>

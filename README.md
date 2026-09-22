@@ -25,7 +25,8 @@ src/
     format.js              Indian number formatting (lakh / crore, 2-2-3 commas)
     hooks.js               reduced motion, animated numbers, sticky-scroll activation
   components/
-    Brand.jsx              jharokha mark, wordmark, buttons (all SVG, no image files)
+    Brand.jsx              jharokha mark, wordmark, buttons, icon tiles (all SVG, no image files)
+    Reveal.jsx             fade/lift-in wrapper, fires once per element via IntersectionObserver
     Hero.jsx  Nav.jsx  Marquee.jsx  WhatItDoes.jsx
     Calculator.jsx  HowItWorks.jsx  Pricing.jsx  CallToAction.jsx  Footer.jsx
     Photo.jsx              warm overlay, lazy loading, graceful fallback
@@ -64,3 +65,39 @@ src/
   marquee captions name customer *segments* we build for, not clients.
 - Every run of text on the page clears WCAG AA against its actually-painted
   backdrop (verified by compositing each ancestor background, not by eye).
+
+## The interaction layer
+
+- **Sticky nav**, blurred/bordered only once the page has scrolled
+  (`useScrolled` in `lib/hooks.js`), with a real mobile menu (hamburger →
+  slide-down panel, closes on Escape/resize/link-click, locks body scroll
+  while open). `Nav` is rendered at the `App.jsx` level, not inside `Hero` —
+  `Hero` uses `overflow-hidden` for its glow/grid, which would otherwise clip
+  the nav's stickiness the moment you scrolled past it.
+- **Scroll reveals** (`Reveal.jsx`): every section's heading and cards fade
+  and lift in once, staggered, the first time they cross into view. Wraps
+  `useReveal`'s IntersectionObserver so nothing needed repeating per section.
+- **One rule for combining `Reveal` with a hover-interactive card**: never put
+  Reveal's entrance transition and a card's own hover transition
+  (`transition-[...]`) on the *same* element. Two different
+  `transition-property`/`transition-duration` utility classes on one node
+  don't merge — only one wins, and which one depends on Tailwind's internal
+  utility ordering, not on the order the class names happen to appear in your
+  JSX. `Reveal` wraps as a neutral `<div>` (entrance only); the styled
+  `<article>` nests inside it (hover only). Same reasoning applies to two
+  utilities that both set `display` (see the next point) — split the concern
+  onto two elements instead of stacking classes that fight for one property.
+- Same trap, different property: **`PrimaryCTA`'s base classes force
+  `inline-flex` unconditionally**. A call site that tries to override it with
+  `hidden sm:inline-flex` is stacking a second, unconditional `display`
+  utility on the same element — cascade order (not JSX order) decides which
+  wins, so this is not reliable. Where a `PrimaryCTA` needs to be
+  hidden/shown responsively (the desktop-only nav button), wrap it in a
+  `<div className="hidden sm:block">` instead of passing display utilities
+  through `className`.
+- The floating hero message card and pricing/bento cards get a small
+  `animate-float` / `hover:-translate-y-*` lift; `IconTile` (`Brand.jsx`) is
+  the shared tinted-square icon treatment used in the bento grid and pricing.
+- A barely-there noise texture (`.grain`, an inline `feTurbulence` data URI,
+  no network request) keeps the large flat CTA panel from reading as a vector
+  fill. It's decoration only, at 5% opacity — nothing to swap before launch.

@@ -1,3 +1,4 @@
+import Nav from './components/Nav'
 import Hero from './components/Hero'
 import Marquee from './components/Marquee'
 import WhatItDoes from './components/WhatItDoes'
@@ -10,6 +11,7 @@ import Footer from './components/Footer'
 export default function App() {
   return (
     <>
+      <Nav />
       <Hero />
       <main>
         <Marquee />
