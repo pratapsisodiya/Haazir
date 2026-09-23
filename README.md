@@ -37,7 +37,11 @@ src/
     Photo.jsx              warm overlay, lazy loading, graceful fallback
 scripts/
   og.mjs                   renders the link-preview cards into public/ (run by hand)
+  icons.mjs                renders the home-screen icons into public/ (run by hand)
   pages.mjs                post-build: one static page per segment, own meta tags
+public/
+  manifest.webmanifest     makes the site installable on a phone
+  sw.js                    offline fallback; network-first so it cannot pin stale HTML
 ```
 
 ## Before launch
@@ -167,3 +171,51 @@ could actually hide content, so it is worth knowing how it cannot:
 straight to the full thread — the exchange is the content, the timing is
 decoration — and the timers are cleared on unmount so a replay can never race a
 run that is already going.
+
+## Installing it on a phone
+
+This repo builds a **website**, not an Android package. There is no `build.gradle`,
+no `AndroidManifest.xml`, no Capacitor or Cordova, and `npm run build` cannot
+emit an `.apk`. If you see Android's *"App not installed as package appears to
+be invalid"*, it came from some other tool that wrapped the site — not from
+this code.
+
+What it does support is installing straight from the browser, which needs no
+package, no signing key and no store listing:
+
+- **Android (Chrome):** open the site → ⋮ → *Add to Home screen* / *Install app*.
+- **iPhone (Safari):** open the site → Share → *Add to Home Screen*.
+
+It then opens fullscreen with the jharokha icon and no browser bar, and it
+still opens with no signal — handy when you are showing it to someone inside a
+showroom with two bars.
+
+Regenerate the icons with `node scripts/icons.mjs` if the mark ever changes
+(needs `npm i -D playwright-core`; the PNGs are committed so a normal install
+never needs a browser).
+
+### Why the service worker is written the way it is
+
+A worker that serves HTML from cache can pin a stale page on someone's phone
+permanently — worse than having no worker at all. So `public/sw.js` is
+network-first for navigations and only ever caches them as an offline fallback.
+`/assets/*` is content-hashed by Vite, so those filenames never change meaning
+and are the one thing served cache-first. Everything else, including Google
+Fonts, is left alone. There is a test for exactly this: change the built HTML
+with the worker already installed, reload, and the new HTML must win.
+
+Bump `VERSION` in `sw.js` to evict every cache on the next visit.
+
+### If you genuinely need a real `.apk`
+
+Two honest routes, both more work than the above:
+
+1. **Trusted Web Activity** (Bubblewrap) — a thin Android shell around this
+   exact site. Needs a Play Console account, a signing key, and a
+   `.well-known/assetlinks.json` on the domain to prove you own it.
+2. **Capacitor** — wraps the built `dist/` into a native project you compile in
+   Android Studio. Heavier, and only worth it if you later want camera,
+   push or contacts.
+
+Neither is a five-minute job, and neither is worth doing before the site has a
+real domain and a real WhatsApp number on it.

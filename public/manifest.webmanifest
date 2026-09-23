@@ -1,0 +1,20 @@
+{
+  "name": "haazir — WhatsApp agents",
+  "short_name": "haazir",
+  "description": "WhatsApp agents that answer, book and confirm on their own — in Hindi, English and Hinglish. Built in Jaipur.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7F7F4",
+  "theme_color": "#F7F7F4",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "categories": ["business", "productivity"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
