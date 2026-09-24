@@ -1,6 +1,12 @@
 import { SectionLabel } from './Brand'
-import { useActiveInViewport } from '../lib/hooks'
+import Reveal from './Reveal'
 
+/**
+ * Three steps, three columns. This used to be a sticky-scroll section that
+ * pinned the heading and dimmed each step as you passed it — a nice effect that
+ * cost 2,169px of desktop scrolling to deliver three short paragraphs. The
+ * paragraphs are the point.
+ */
 const STEPS = [
   {
     n: '01',
@@ -15,63 +21,36 @@ const STEPS = [
   {
     n: '03',
     title: 'It goes live and you see the numbers',
-    body: 'We handle business verification and template approvals with Meta, then move it onto your real number. Each month you get a one-page report: enquiries answered, bookings made, threads handed to your team.',
+    body: 'We handle business verification and template approvals with Meta, then move it onto your real number. Each month you get a one-page report: enquiries answered, bookings made, threads handed over.',
   },
 ]
 
 export default function HowItWorks() {
-  const [active, refs] = useActiveInViewport(STEPS.length)
-
   return (
-    <section id="how-it-works" className="border-t border-line bg-paper py-20 sm:py-28">
+    <section id="how-it-works" className="border-t border-line bg-paper py-16 sm:py-24">
       <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
-        <div className="lg:grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:gap-20">
-          {/* Pinned heading */}
-          <div className="lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:justify-center">
-            <SectionLabel>How it works</SectionLabel>
-            <h2 className="max-w-[16ch] text-[clamp(2rem,4.6vw,3.1rem)]">
-              Three weeks, and nobody learns new software.
-            </h2>
-            <p className="mt-6 max-w-[38ch] text-ink/65">
-              You keep the same number, the same team, the same way of speaking to
-              customers. We do the part that takes an engineer.
-            </p>
+        <Reveal className="max-w-[46rem]">
+          <SectionLabel>How it works</SectionLabel>
+          <h2 className="max-w-[20ch] text-[clamp(1.9rem,4.2vw,2.9rem)]">
+            Three weeks, and nobody learns new software.
+          </h2>
+          <p className="mt-5 max-w-[46ch] text-ink/65">
+            You keep the same number, the same team, the same way of speaking to customers.
+            We do the part that takes an engineer.
+          </p>
+        </Reveal>
 
-            <ol className="mt-9 hidden items-center gap-3 lg:flex" aria-hidden="true">
-              {STEPS.map((step, i) => (
-                <li
-                  key={step.n}
-                  className={`h-[3px] w-12 rounded-full transition-colors duration-500 ${
-                    i <= active ? 'bg-clay' : 'bg-line'
-                  }`}
-                />
-              ))}
-            </ol>
-          </div>
-
-          {/* Scrolling steps */}
-          <ol className="mt-12 space-y-14 lg:mt-0 lg:space-y-0 lg:py-[30vh]">
-            {STEPS.map((step, i) => (
-              <li
-                key={step.n}
-                ref={(node) => {
-                  refs.current[i] = node
-                }}
-                className={`transition-opacity duration-500 lg:flex lg:min-h-[52vh] lg:flex-col lg:justify-center ${
-                  i === active ? 'opacity-100' : 'lg:opacity-40'
-                }`}
-              >
-                <p className="tabular text-[0.82rem] font-medium tracking-[0.2em] text-clay-deep">
-                  {step.n}
-                </p>
-                <h3 className="mt-4 max-w-[18ch] text-[clamp(1.7rem,3.4vw,2.4rem)]">
-                  {step.title}
-                </h3>
-                <p className="mt-5 max-w-[46ch] text-ink/65">{step.body}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
+        <ol className="mt-10 grid gap-8 md:grid-cols-3 md:gap-6">
+          {STEPS.map((step, i) => (
+            <Reveal as="li" key={step.n} delay={i * 80} className="border-t border-line pt-6">
+              <p className="tabular text-[0.8rem] font-medium tracking-[0.2em] text-clay-deep">
+                {step.n}
+              </p>
+              <h3 className="mt-3 text-[1.35rem]">{step.title}</h3>
+              <p className="mt-3 text-[0.98rem] text-ink/65">{step.body}</p>
+            </Reveal>
+          ))}
+        </ol>
       </div>
     </section>
   )

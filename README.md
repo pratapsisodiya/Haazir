@@ -28,13 +28,13 @@ src/
     hooks.js               reduced motion, animated numbers, sticky-scroll activation
   components/
     Brand.jsx              jharokha mark, wordmark, buttons (all SVG, no image files)
+    Thread.jsx             plays a scripted thread out, message by message
+    Hero.jsx               headline + the thread: the demo IS the hero
+    SegmentBar.jsx         one-line "built for", replacing the six-photo marquee
     Reveal.jsx             fades a block up as it enters view
     ScrollProgress.jsx     the 2px reading-progress rule at the top
-    Conversation.jsx       plays a scripted thread out, message by message
-    Comparison.jsx         haazir vs an unofficial bot vs another hire
-    Hero.jsx  Nav.jsx  Marquee.jsx  WhatItDoes.jsx  Faq.jsx
-    Calculator.jsx  HowItWorks.jsx  Pricing.jsx  CallToAction.jsx  Footer.jsx
-    Photo.jsx              warm overlay, lazy loading, graceful fallback
+    Nav.jsx  WhatItDoes.jsx  Calculator.jsx  HowItWorks.jsx
+    Pricing.jsx  Faq.jsx  CallToAction.jsx  Footer.jsx
 scripts/
   og.mjs                   renders the link-preview cards into public/ (run by hand)
   icons.mjs                renders the home-screen icons into public/ (run by hand)
@@ -51,12 +51,7 @@ public/
    file. `SITE_URL` there, and the hardcoded domain in `index.html` +
    `scripts/pages.mjs`, need the real domain once you have one — they are what
    the link-preview card points at.
-2. **`src/lib/images.js`** — the photos are Unsplash placeholders chosen by
-   subject (jharokha window, jewellery case, mandap, clinic reception, coaching
-   classroom, Udaipur at dawn, hotel desk). Swap the photo IDs for licensed
-   shots. `Photo` falls back to a warm stone gradient if a URL fails, so a dead
-   ID degrades quietly rather than showing a broken image.
-3. **Calculator assumptions** — `AFTER_HOURS_SHARE` (34%) and `RECOVERY_RATE`
+2. **Calculator assumptions** — `AFTER_HOURS_SHARE` (34%) and `RECOVERY_RATE`
    (12%) live at the top of `Calculator.jsx` and are printed under the sliders.
    Change the constants and the copy updates itself.
 
@@ -219,3 +214,42 @@ Two honest routes, both more work than the above:
 
 Neither is a five-minute job, and neither is worth doing before the site has a
 real domain and a real WhatsApp number on it.
+
+## Why the page is shaped this way
+
+It was rebuilt around one measurement. The previous version ran **12,607px on a
+phone — 14.9 screens of scrolling** — across eleven sections, and the single
+most persuasive thing on it, the conversation playing itself out, sat fourth.
+A jeweller reading mid-shift was never going to reach it, let alone the price.
+
+The rebuild:
+
+- **The demo is the hero.** `Thread` moved into `Hero`, so the exchange plays
+  the moment you land. On a phone the blocks run headline → thread → buttons
+  rather than headline → buttons → thread: proof before the ask, and it lifts
+  the card ~300px so it is properly on screen instead of peeking over the fold
+  by an inch. That is why the hero uses explicit grid placement rather than two
+  nested columns — the desktop order and the phone order genuinely differ.
+- **The photo strip became one line.** Six stock photos cost a section to say
+  something `SegmentBar` says in 165px, and every one of them was an unverified
+  Unsplash placeholder. With the hero photo gone too, the page now carries **no
+  photography at all** — which also retired `Photo.jsx`, `lib/images.js` and the
+  whole dead-URL failure mode. If you want photography back once you have
+  licensed shots, it is an additive change, not a rescue.
+- **The sticky how-it-works is now three columns.** Pinning the heading and
+  dimming each step cost 2,169px of desktop scrolling to deliver three short
+  paragraphs. The paragraphs were the point.
+- **The comparison table became two paragraphs inside pricing.** Seven rows that
+  had to scroll sideways on a phone were answering two objections — so they are
+  now two answers, sitting next to the price where the objection actually
+  surfaces.
+- **The bento became three equal cards**, with compliance as the strip
+  underneath. It is a reassurance, not a fourth feature.
+
+Result: **desktop 10,236px → 6,087px (11.4 → 6.8 screens, 41% shorter)**, phone
+12,607px → 9,189px. Eleven sections became seven.
+
+Deleted in the process, and why nothing references them: `Marquee.jsx`,
+`Conversation.jsx` (became `Thread.jsx` in the hero), `Comparison.jsx`,
+`Photo.jsx`, `lib/images.js`, plus the `useParallax` and `useActiveInViewport`
+hooks that only existed to drive the hero photo and the sticky scroller.

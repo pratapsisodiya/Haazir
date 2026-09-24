@@ -22,67 +22,94 @@ const PLANS = [
     name: 'Messages',
     price: 'At cost',
     cadence: 'passed through',
-    body: "Meta charges per conversation. We bill you exactly what they bill us, on the same invoice.",
+    body: 'Meta charges per conversation. We bill you exactly what they bill us, on the same invoice.',
     points: ["Meta's published rates", 'No markup, no minimum', 'Itemised every month'],
+  },
+]
+
+/**
+ * The comparison table used to be its own section: seven rows, 1,226px of phone
+ * scrolling, and it had to scroll sideways to be read at all. It was answering
+ * two objections, so it is now two short answers, sitting where the objections
+ * actually surface — next to the price.
+ */
+const OBJECTIONS = [
+  {
+    q: 'Why not a cheap WhatsApp bot?',
+    a: 'Most of them sign in as your phone, which is what gets numbers banned, and they answer from keyword scripts rather than from how your shop actually talks. They are cheap right up until the number goes.',
+  },
+  {
+    q: 'Why not just hire someone?',
+    a: 'A person is better than us at judgement and costs more than us at 11pm. Thirty enquiries at once is not a staffing problem you want to solve twice. Keep the person for the threads that need one — that is exactly what it hands over.',
   },
 ]
 
 export default function Pricing() {
   return (
-    <section id="pricing" className="border-t border-line bg-white py-20 sm:py-28">
+    <section id="pricing" className="border-t border-line bg-white py-16 sm:py-24">
       <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
         <Reveal>
           <SectionLabel>Pricing</SectionLabel>
-          <h2 className="max-w-[18ch] text-[clamp(2rem,4.6vw,3.1rem)]">
+          <h2 className="max-w-[18ch] text-[clamp(1.9rem,4.2vw,2.9rem)]">
             Two numbers and a pass-through.
           </h2>
         </Reveal>
 
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {PLANS.map((plan) => (
-            <article
-              key={plan.name}
-              className={`relative flex h-full flex-col rounded-[1.5rem] border bg-paper p-7 lift transition-transform duration-200 hover:-translate-y-1 sm:p-8 ${
-                plan.featured ? 'border-clay' : 'border-line'
-              }`}
-            >
-              {plan.badge && (
-                <span className="absolute -top-3 left-7 rounded-full bg-clay-deep px-3 py-1 text-[0.72rem] font-medium tracking-[0.1em] text-white uppercase">
-                  {plan.badge}
-                </span>
-              )}
+        <div className="mt-10 grid gap-4 sm:gap-5 md:grid-cols-3">
+          {PLANS.map((plan, i) => (
+            <Reveal key={plan.name} delay={i * 70}>
+              <article
+                className={`relative flex h-full flex-col rounded-[1.25rem] border bg-paper p-6 lift transition-transform duration-200 hover:-translate-y-1 sm:p-7 ${
+                  plan.featured ? 'border-clay' : 'border-line'
+                }`}
+              >
+                {plan.badge && (
+                  <span className="absolute -top-3 left-6 rounded-full bg-clay-deep px-3 py-1 text-[0.7rem] font-medium tracking-[0.1em] text-white uppercase">
+                    {plan.badge}
+                  </span>
+                )}
 
-              <h3 className="text-[1.05rem] font-medium tracking-[0.02em] text-ink/60 uppercase">
-                {plan.name}
-              </h3>
+                <h3 className="text-[1rem] font-medium tracking-[0.02em] text-ink/60 uppercase">
+                  {plan.name}
+                </h3>
 
-              <p className="mt-5 flex items-baseline gap-2">
-                <span className="tabular text-[clamp(2.1rem,4vw,2.7rem)] leading-none font-medium tracking-[-0.045em]">
-                  {plan.price}
-                </span>
-                <span className="text-[0.92rem] text-ink/60">{plan.cadence}</span>
-              </p>
+                <p className="mt-4 flex items-baseline gap-2">
+                  <span className="tabular text-[clamp(2rem,3.6vw,2.5rem)] leading-none font-medium tracking-[-0.045em]">
+                    {plan.price}
+                  </span>
+                  <span className="text-[0.9rem] text-ink/60">{plan.cadence}</span>
+                </p>
 
-              <p className="mt-5 text-[0.98rem] text-ink/65">{plan.body}</p>
+                <p className="mt-4 text-[0.95rem] text-ink/65">{plan.body}</p>
 
-              <ul className="mt-6 space-y-2.5 border-t border-line pt-6 text-[0.94rem] text-ink/65">
-                {plan.points.map((point) => (
-                  <li key={point} className="flex gap-3">
-                    <span className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-clay" aria-hidden="true" />
-                    {point}
-                  </li>
-                ))}
-              </ul>
-            </article>
+                <ul className="mt-5 space-y-2 border-t border-line pt-5 text-[0.92rem] text-ink/65">
+                  {plan.points.map((point) => (
+                    <li key={point} className="flex gap-3">
+                      <span className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-clay" aria-hidden="true" />
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            </Reveal>
           ))}
         </div>
 
-        <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
+        <Reveal delay={210} className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
           <PrimaryCTA context="pricing">Ask what yours would cost</PrimaryCTA>
           <p className="text-[0.92rem] text-ink/60">
             No retainer lock-in. Cancel the monthly whenever you like.
           </p>
-        </div>
+        </Reveal>
+
+        <Reveal delay={90} className="mt-12 grid gap-4 border-t border-line pt-10 sm:gap-5 md:grid-cols-2">
+          {OBJECTIONS.map(({ q, a }) => (
+            <div key={q}>
+              <h3 className="text-[1.15rem]">{q}</h3>
+              <p className="mt-3 text-[0.95rem] text-ink/65">{a}</p>
+            </div>
+          ))}
+        </Reveal>
       </div>
     </section>
   )

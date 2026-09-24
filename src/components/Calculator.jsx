@@ -64,16 +64,16 @@ export default function Calculator() {
   }, [enquiries, ticket, touched])
 
   return (
-    <section id="calculator" className="border-t border-line bg-white py-20 sm:py-28">
+    <section id="calculator" className="border-t border-line bg-white py-16 sm:py-24">
       <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
         <Reveal>
           <SectionLabel>The cost of silence</SectionLabel>
-          <h2 className="max-w-[18ch] text-[clamp(2rem,4.6vw,3.1rem)]">
+          <h2 className="max-w-[18ch] text-[clamp(1.9rem,4.2vw,2.9rem)]">
             Move two sliders. See the year you're giving away.
           </h2>
         </Reveal>
 
-        <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] lg:gap-16">
+        <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] lg:gap-16">
           {/* Inputs */}
           <div>
             <Slider

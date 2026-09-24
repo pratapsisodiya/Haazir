@@ -8,10 +8,6 @@ import Reveal from './Reveal'
  */
 const QUESTIONS = [
   {
-    q: 'Will my WhatsApp number get banned?',
-    a: "That's the usual fear, and it comes from the unofficial tools that log into WhatsApp pretending to be your phone. We don't do that. haazir runs on the official WhatsApp Business Platform from Meta. Business verification, template approvals and quality-rating monitoring are our job, not yours.",
-  },
-  {
     q: 'Do I have to change my number?',
     a: "No — you keep the number your customers already know. What changes is how your team reads it: the number moves onto the official platform, so it stops working through the WhatsApp Business app on a handset, and your staff reply from a shared inbox on any device instead. We do the migration with you.",
   },
@@ -32,10 +28,6 @@ const QUESTIONS = [
     a: 'About three weeks. An afternoon with you, a working agent on a test number inside a week, then business verification and template approvals with Meta — that last part runs on Meta’s timeline, not ours, so it is the step that can stretch.',
   },
   {
-    q: 'What does it actually cost to run?',
-    a: '₹5,000 a month, plus what Meta charges per conversation. We pass those through at cost on the same invoice — no markup, itemised. There is no lock-in on the monthly.',
-  },
-  {
     q: 'Does it work in Hindi?',
     a: 'Hindi, English and Hinglish, out of the box. It replies in whatever script the customer wrote in, and switches mid-conversation without being asked.',
   },
@@ -43,16 +35,16 @@ const QUESTIONS = [
 
 export default function Faq() {
   return (
-    <section id="faq" className="border-t border-line bg-paper py-20 sm:py-28">
+    <section id="faq" className="border-t border-line bg-paper py-16 sm:py-24">
       <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
         <Reveal>
           <SectionLabel>Straight answers</SectionLabel>
-          <h2 className="max-w-[18ch] text-[clamp(2rem,4.6vw,3.1rem)]">
+          <h2 className="max-w-[18ch] text-[clamp(1.9rem,4.2vw,2.9rem)]">
             The things everyone asks before they say yes.
           </h2>
         </Reveal>
 
-        <div className="mt-12 max-w-[52rem] divide-y divide-line border-y border-line">
+        <div className="mt-10 max-w-[52rem] divide-y divide-line border-y border-line">
           {QUESTIONS.map(({ q, a }) => (
             <details key={q} className="group">
               <summary className="flex cursor-pointer list-none items-start justify-between gap-6 py-5 text-[1.05rem] text-ink transition-colors hover:text-clay-deep [&::-webkit-details-marker]:hidden">

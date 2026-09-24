@@ -1,17 +1,23 @@
 import ScrollProgress from './components/ScrollProgress'
 import Nav from './components/Nav'
 import Hero from './components/Hero'
-import Marquee from './components/Marquee'
+import SegmentBar from './components/SegmentBar'
 import WhatItDoes from './components/WhatItDoes'
-import Conversation from './components/Conversation'
 import Calculator from './components/Calculator'
 import HowItWorks from './components/HowItWorks'
-import Comparison from './components/Comparison'
 import Pricing from './components/Pricing'
 import Faq from './components/Faq'
 import CallToAction from './components/CallToAction'
 import Footer from './components/Footer'
 
+/**
+ * Demo first. The thread now plays inside the hero, so the most persuasive
+ * thing on the page is the first thing on it — rather than a stock photo up
+ * top and the working demo a third of the way down, which is what this was.
+ *
+ * Show it → say what it is → price the alternative → explain the work →
+ * price the work → answer the objections → ask.
+ */
 export default function App() {
   return (
     <>
@@ -19,13 +25,10 @@ export default function App() {
       <Nav />
       <Hero />
       <main>
-        <Marquee />
+        <SegmentBar />
         <WhatItDoes />
-        {/* Describe it, then show it working, then price it. */}
-        <Conversation />
         <Calculator />
         <HowItWorks />
-        <Comparison />
         <Pricing />
         <Faq />
         <CallToAction />

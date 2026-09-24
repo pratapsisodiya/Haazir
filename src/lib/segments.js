@@ -4,10 +4,10 @@
  * instead of a generic "business".
  *
  * Everything brand-level (the wordmark, the headline, the palette) stays fixed.
- * What changes is the subhead, the sample conversation, which segment the photo
- * strip leads with, and what the calculator opens tuned to.
+ * What changes is the subhead, the thread the hero plays, and what the
+ * calculator opens tuned to.
  *
- * `thread` is the scripted exchange the Conversation section plays out. Each one
+ * `thread` is the scripted exchange the hero plays out. Each one
  * is written to end the same way on purpose: the agent answers, books, and then
  * hits something it should not decide — a discount, a diagnosis, a rate — and
  * hands over. That hand-off is the part that earns trust, so it is the part the
@@ -29,8 +29,6 @@ export const DEFAULT_SEGMENT = {
     from: 'Is the Kundan set still available?',
     reply: "Ji haan — it's in the Johari Bazaar store. Shall I hold it for you till tomorrow 6pm?",
   },
-  /** Which marquee photo the strip leads with. */
-  leadImage: null,
   /** Calculator starting point — a plausible mid-size operation. */
   calculator: { enquiries: 45, ticket: 35_000 },
   thread: {
@@ -69,7 +67,6 @@ export const SEGMENTS = [
       from: 'Is the Kundan set still available?',
       reply: "Ji haan — it's in the Johari Bazaar store. Shall I hold it for you till tomorrow 6pm?",
     },
-    leadImage: 'Jewellery showrooms',
     calculator: { enquiries: 25, ticket: 45_000 },
     thread: {
       opened: '11:42 pm, Sunday',
@@ -105,7 +102,6 @@ export const SEGMENTS = [
       from: 'Doctor sahab ka Saturday ka slot mil jayega?',
       reply: 'Saturday 11:30 am khaali hai. Aapke naam se rakh doon?',
     },
-    leadImage: 'Clinics & dental practices',
     calculator: { enquiries: 40, ticket: 2_500 },
     thread: {
       opened: '10:18 pm, Thursday',
@@ -138,7 +134,6 @@ export const SEGMENTS = [
       from: 'Do you have a room for 2 nights from the 14th?',
       reply: 'Yes — a deluxe double is free on both nights. Shall I hold it while you check with your family?',
     },
-    leadImage: 'Hotels',
     calculator: { enquiries: 35, ticket: 9_000 },
     thread: {
       opened: '12:06 am, Saturday',
@@ -174,7 +169,6 @@ export const SEGMENTS = [
       from: 'NEET batch ki fees aur timing bata dijiye',
       reply: 'Zaroor — morning batch 7–10, evening 5–8. Fee structure bhej doon, ya counselling ka slot rakh doon?',
     },
-    leadImage: 'Coaching institutes',
     calculator: { enquiries: 40, ticket: 25_000 },
     thread: {
       opened: '11:05 pm, Tuesday',

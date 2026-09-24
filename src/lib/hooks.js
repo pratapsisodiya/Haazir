@@ -56,44 +56,6 @@ export function useAnimatedNumber(target, { duration = 650 } = {}) {
   return display
 }
 
-/**
- * Reports which of the registered elements is closest to the middle of the
- * viewport. Used by the sticky "how it works" scroller.
- */
-export function useActiveInViewport(count) {
-  const [active, setActive] = useState(0)
-  const refs = useRef([])
-
-  useEffect(() => {
-    const nodes = refs.current.filter(Boolean)
-    if (!nodes.length) return
-
-    const pick = () => {
-      const middle = window.innerHeight / 2
-      let best = 0
-      let bestDistance = Infinity
-      nodes.forEach((node, i) => {
-        const box = node.getBoundingClientRect()
-        const distance = Math.abs(box.top + box.height / 2 - middle)
-        if (distance < bestDistance) {
-          bestDistance = distance
-          best = i
-        }
-      })
-      setActive(best)
-    }
-
-    pick()
-    window.addEventListener('scroll', pick, { passive: true })
-    window.addEventListener('resize', pick)
-    return () => {
-      window.removeEventListener('scroll', pick)
-      window.removeEventListener('resize', pick)
-    }
-  }, [count])
-
-  return [active, refs]
-}
 
 /** True once the page has scrolled past `offset` — drives the nav's blur-on-scroll. */
 export function useScrolled(offset = 8) {
@@ -179,45 +141,3 @@ export function useScrollProgress() {
   return progress
 }
 
-/**
- * Drifts an element against the scroll by at most `distance` px. Returns 0
- * under reduced motion, so the caller renders it stationary.
- */
-export function useParallax(distance = 40) {
-  const reduced = usePrefersReducedMotion()
-  const ref = useRef(null)
-  const [offset, setOffset] = useState(0)
-
-  useEffect(() => {
-    if (reduced) {
-      setOffset(0)
-      return
-    }
-    const node = ref.current
-    if (!node) return
-
-    let frame = 0
-    const measure = () => {
-      frame = 0
-      const box = node.getBoundingClientRect()
-      // -1 (element below the fold) → 1 (above it)
-      const centre = (box.top + box.height / 2 - window.innerHeight / 2) / window.innerHeight
-      setOffset(Math.max(-1, Math.min(1, centre)) * distance)
-    }
-
-    const onScroll = () => {
-      if (!frame) frame = requestAnimationFrame(measure)
-    }
-
-    measure()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll)
-    return () => {
-      if (frame) cancelAnimationFrame(frame)
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
-    }
-  }, [distance, reduced])
-
-  return [ref, offset]
-}
