@@ -1,0 +1,22 @@
+{
+  "name": "@haazir/storage",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1141.0",
+    "@aws-sdk/lib-storage": "^3.1141.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.0",
+    "msw": "^2.15.0",
+    "vitest": "^4.1.0"
+  }
+}

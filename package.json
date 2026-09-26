@@ -18,7 +18,10 @@
     "db:migrate": "pnpm --filter @haazir/db migrate",
     "db:seed": "pnpm --filter @haazir/db seed",
     "services:up": "docker compose up -d",
-    "services:down": "docker compose down"
+    "services:down": "docker compose down",
+    "whatsapp:connect": "pnpm --filter @haazir/db connect-whatsapp",
+    "whatsapp:mock": "pnpm --filter @haazir/api mock-graph",
+    "whatsapp:simulate": "pnpm --filter @haazir/api simulate-webhook"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

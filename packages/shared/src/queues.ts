@@ -19,3 +19,16 @@ export type QueueName = (typeof QUEUES)[keyof typeof QUEUES]
 
 /** Redis key the worker refreshes every minute; the API's /ready reads it. */
 export const WORKER_HEARTBEAT_KEY = 'haazir:worker:heartbeat'
+
+/**
+ * Retry policy per queue (spec §7), applied by whoever adds the job. Plain
+ * objects so this file stays free of BullMQ; they match BullMQ's JobsOptions.
+ * Completed jobs are kept briefly for debugging, failed ones longer.
+ */
+const keep = { removeOnComplete: { count: 1000 }, removeOnFail: { count: 5000 } }
+export const JOB_OPTIONS = {
+  inbound: { attempts: 5, backoff: { type: 'exponential', delay: 1000 }, ...keep },
+  aiReply: { attempts: 2, backoff: { type: 'exponential', delay: 2000 }, ...keep },
+  outbound: { attempts: 5, backoff: { type: 'exponential', delay: 1000 }, ...keep },
+  media: { attempts: 3, backoff: { type: 'exponential', delay: 5000 }, ...keep },
+} as const

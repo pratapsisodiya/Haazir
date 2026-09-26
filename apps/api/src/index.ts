@@ -1,5 +1,8 @@
+import { Queue } from 'bullmq'
 import { Redis } from 'ioredis'
 import { createDb } from '@haazir/db'
+import type { InboundJob } from '@haazir/messaging'
+import { JOB_OPTIONS, QUEUES } from '@haazir/shared'
 import { createApp } from './app'
 import { env } from './env'
 import { createLogger } from './logger'
@@ -16,11 +19,29 @@ const database = createDb(env.DATABASE_URL)
 const redis = new Redis(env.REDIS_URL, { maxRetriesPerRequest: 1, lazyConnect: false })
 redis.on('error', (err) => logger.warn({ err: err.message }, 'redis error'))
 
+// A separate connection for BullMQ, which wants to wait out Redis blips
+// rather than fail commands (a webhook we can't queue is retried by Meta).
+const queueConnection = new Redis(env.REDIS_URL, { maxRetriesPerRequest: null })
+queueConnection.on('error', (err) => logger.warn({ err: err.message }, 'redis (queue) error'))
+const inboundQueue = new Queue<InboundJob>(QUEUES.inbound, {
+  connection: queueConnection,
+  defaultJobOptions: JOB_OPTIONS.inbound,
+})
+
+if (!env.META_APP_SECRET || !env.META_WEBHOOK_VERIFY_TOKEN) {
+  logger.warn('META_APP_SECRET / META_WEBHOOK_VERIFY_TOKEN not set: WhatsApp webhooks answer 503')
+}
+
 const app = createApp({
   logger,
   database,
   redis,
   corsOrigins: [env.APP_URL],
+  whatsapp: {
+    appSecret: env.META_APP_SECRET,
+    verifyToken: env.META_WEBHOOK_VERIFY_TOKEN,
+    inboundQueue,
+  },
 })
 
 const port = Number(new URL(env.API_URL).port || 4000)
@@ -43,7 +64,8 @@ async function shutdown(signal: string) {
   force.unref()
 
   server.close(async () => {
-    await Promise.allSettled([database.close(), redis.quit()])
+    await Promise.allSettled([database.close(), redis.quit(), inboundQueue.close()])
+    await queueConnection.quit().catch(() => {})
     logger.info('bye')
     process.exit(0)
   })

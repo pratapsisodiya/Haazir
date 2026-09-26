@@ -46,7 +46,22 @@ export const envSchema = z
     META_APP_ID: optional(),
     META_APP_SECRET: optional(),
     META_WEBHOOK_VERIFY_TOKEN: optional(),
-    META_GRAPH_API_VERSION: optional(),
+    // Pinned after checking Meta's changelog: v26.0 (released 2026-07-29).
+    // Bump deliberately, after reading that version's WhatsApp changes.
+    META_GRAPH_API_VERSION: z
+      .string()
+      .regex(/^v\d+\.\d$/, { message: 'must look like v26.0' })
+      .default('v26.0'),
+    // Only overridden to point at a local mock of the Graph API (tests, dev).
+    META_GRAPH_BASE_URL: url().default('https://graph.facebook.com'),
+
+    // Phase 1 is single-tenant: one number, configured here and written to
+    // whatsapp_accounts by `pnpm whatsapp:connect`. Phase 3 replaces this with
+    // the super-admin connect screen.
+    WHATSAPP_PHONE_NUMBER_ID: optional(),
+    WHATSAPP_WABA_ID: optional(),
+    WHATSAPP_ACCESS_TOKEN: optional(),
+    WHATSAPP_ORG_SLUG: z.string().default('shiksha-computer-sikar'),
 
     LLM_PROVIDER: z.enum(['openai', 'anthropic', 'google', 'azure']).default('openai'),
     LLM_FAST_MODEL: optional(),
@@ -59,10 +74,14 @@ export const envSchema = z
     STT_PROVIDER: z.enum(['openai', 'sarvam']).default('openai'),
     SARVAM_API_KEY: optional(),
 
+    // S3-compatible storage (Cloudflare R2, MinIO…). With no endpoint set,
+    // files go to STORAGE_LOCAL_DIR instead, which is fine for development.
     STORAGE_ENDPOINT: optional(),
+    STORAGE_REGION: z.string().default('auto'),
     STORAGE_BUCKET: optional(),
     STORAGE_ACCESS_KEY: optional(),
     STORAGE_SECRET_KEY: optional(),
+    STORAGE_LOCAL_DIR: z.string().default('.data/storage'),
 
     RAZORPAY_KEY_ID: optional(),
     RAZORPAY_KEY_SECRET: optional(),
@@ -74,6 +93,18 @@ export const envSchema = z
     SENTRY_DSN: optional(),
   })
   .superRefine((env, ctx) => {
+    if (env.STORAGE_ENDPOINT) {
+      for (const key of ['STORAGE_BUCKET', 'STORAGE_ACCESS_KEY', 'STORAGE_SECRET_KEY'] as const) {
+        if (!env[key]) {
+          ctx.addIssue({
+            code: 'custom',
+            path: [key],
+            message: 'is required when STORAGE_ENDPOINT is set',
+          })
+        }
+      }
+    }
+
     // Secrets that protect stored data are mandatory in production, whatever
     // phase we're in: shipping without them is not recoverable later.
     if (env.NODE_ENV !== 'production') return

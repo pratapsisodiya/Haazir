@@ -4,7 +4,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./schema": "./src/schema/index.ts"
+    "./schema": "./src/schema/index.ts",
+    "./seed": "./src/seed.ts"
   },
   "scripts": {
     "generate": "drizzle-kit generate",
@@ -13,7 +14,8 @@
     "studio": "drizzle-kit studio",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "connect-whatsapp": "tsx src/connect-whatsapp.ts"
   },
   "dependencies": {
     "@haazir/shared": "workspace:*",

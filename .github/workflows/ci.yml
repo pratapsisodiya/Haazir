@@ -32,7 +32,7 @@ jobs:
     # The unit tests run migrations on in-process PGlite; this proves the same
     # migrations and seed on a real Postgres 16 + pgvector, and that the API
     # comes up ready against it.
-    name: Migrate, seed and boot against real services
+    name: Migrate, seed, boot and run the WhatsApp loop against real services
     runs-on: ubuntu-latest
     timeout-minutes: 10
     services:
@@ -55,6 +55,14 @@ jobs:
       API_URL: http://localhost:4000
       DATABASE_URL: postgres://haazir:haazir@localhost:5432/haazir
       REDIS_URL: redis://localhost:6379
+      # Test-only values: the mock Graph API stands in for Meta.
+      ENCRYPTION_KEY: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
+      META_APP_SECRET: ci-app-secret
+      META_WEBHOOK_VERIFY_TOKEN: ci-verify-token
+      META_GRAPH_BASE_URL: http://localhost:4010
+      WHATSAPP_PHONE_NUMBER_ID: '100000000000001'
+      WHATSAPP_WABA_ID: '200000000000001'
+      WHATSAPP_ACCESS_TOKEN: ci-mock-token
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -69,12 +77,6 @@ jobs:
       - run: pnpm db:seed
       - name: Seed is idempotent
         run: pnpm db:seed
-      - name: API boots and reports ready
-        run: |
-          pnpm --filter @haazir/api build
-          node apps/api/dist/index.js &
-          for i in $(seq 1 20); do
-            curl -sf http://localhost:4000/ready && exit 0
-            sleep 1
-          done
-          echo "API never became ready" && exit 1
+      - run: pnpm build
+      - name: WhatsApp loop end to end (mock Meta)
+        run: ./scripts/e2e-whatsapp.sh

@@ -8,11 +8,16 @@
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "mock-graph": "tsx scripts/mock-graph.ts",
+    "simulate-webhook": "tsx scripts/simulate-webhook.ts"
   },
   "dependencies": {
     "@haazir/db": "workspace:*",
+    "@haazir/messaging": "workspace:*",
     "@haazir/shared": "workspace:*",
+    "@haazir/whatsapp": "workspace:*",
+    "bullmq": "^5.81.0",
     "cors": "^2.8.5",
     "drizzle-orm": "^0.45.0",
     "express": "^5.2.0",

@@ -11,14 +11,24 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1141.0",
+    "@aws-sdk/lib-storage": "^3.1141.0",
+    "@haazir/db": "workspace:*",
+    "@haazir/messaging": "workspace:*",
     "@haazir/shared": "workspace:*",
+    "@haazir/storage": "workspace:*",
+    "@haazir/whatsapp": "workspace:*",
     "bullmq": "^5.81.0",
+    "drizzle-orm": "^0.45.0",
     "ioredis": "^5.11.0",
+    "pg": "^8.23.0",
     "pino": "^10.3.0",
     "zod": "^4.6.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.0",
     "@types/node": "^22.20.0",
+    "msw": "^2.15.0",
     "pino-pretty": "^13.1.0",
     "tsup": "^8.5.0",
     "tsx": "^4.23.0",

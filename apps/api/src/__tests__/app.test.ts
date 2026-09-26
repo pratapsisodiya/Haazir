@@ -13,6 +13,7 @@ function makeApp(overrides: Partial<AppDeps> = {}) {
     corsOrigins: ['http://localhost:5173'],
     database: { ping: async () => {} },
     redis: { ping: async () => 'PONG', get: async (k) => store.get(k) ?? null },
+    whatsapp: { inboundQueue: { add: async () => undefined } },
     ...overrides,
   })
 }

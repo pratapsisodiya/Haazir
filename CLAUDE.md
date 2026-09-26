@@ -12,6 +12,9 @@ test steps, tests added and known gaps (§23), then stop.
 - `apps/site`: public marketing site, deployed to Vercel from this repo (see `vercel.json`). Plain Vite/React JS until it becomes Astro in Phase 6. Not linted or formatted by the root config.
 - `packages/shared`: zod env (`env.ts`), error codes, constants, money helpers. Browser-safe except `./env`.
 - `packages/db`: Drizzle schema (`src/schema`), generated SQL in `migrations/`, idempotent `seed.ts`.
+- `packages/channels/whatsapp`: pure Cloud API code (parser, signature, window rules, Graph client). No database.
+- `packages/messaging`: `queueOutbound`, the one place anything is sent from. Never call `GraphClient.send` elsewhere.
+- `packages/storage`: `createStorage(env)`: S3-compatible or local disk.
 
 ## Rules that bite
 
@@ -20,6 +23,8 @@ test steps, tests added and known gaps (§23), then stop.
 - Every tenant table has `org_id` + an index, and every query is scoped by it.
 - Schema change: edit `packages/db/src/schema`, run `pnpm db:generate --name <what>`, and commit the SQL. Never edit a migration that has already been applied anywhere.
 - Workspace packages ship TypeScript source. If an app bundles one, it must also list that package's npm dependencies (see `apps/api/tsup.config.ts`).
+- Worker processors take a `Deps` object (db, kv, locks, queues, storage, graph) so tests run them on PGlite with fakes. Keep them idempotent: Meta redelivers, BullMQ retries.
+- BullMQ job ids can't contain `:`.
 - Don't put `NODE_ENV` in `.env`: Vite reads the same file and would build the dashboard in dev mode.
 - Design (§14): tokens only (Tailwind's default palette and type scale are removed), status = icon + label + colour, no gradients, no card hover motion, no section fade-ins, no eyebrow labels, no all-caps, no trailing arrows. Hindi-first copy in `locales/hi.json` with the same keys as `en.json` (a test checks this).
 - Ask Pratap before any decision that changes cost, pricing, or how personal data is stored.

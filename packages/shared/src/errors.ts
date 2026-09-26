@@ -9,9 +9,11 @@ export const ERROR_CODES = [
   'FORBIDDEN',
   'RATE_LIMITED',
   'WINDOW_CLOSED',
+  'OPTED_OUT',
   'PLAN_LIMIT',
   'TEMPLATE_NOT_APPROVED',
   'INTERNAL',
+  'UNAVAILABLE',
 ] as const
 
 export type ErrorCode = (typeof ERROR_CODES)[number]
@@ -28,9 +30,11 @@ const STATUS: Record<ErrorCode, number> = {
   NOT_FOUND: 404,
   RATE_LIMITED: 429,
   WINDOW_CLOSED: 409,
+  OPTED_OUT: 409,
   PLAN_LIMIT: 402,
   TEMPLATE_NOT_APPROVED: 409,
   INTERNAL: 500,
+  UNAVAILABLE: 503,
 }
 
 export class AppError extends Error {

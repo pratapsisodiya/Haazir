@@ -4,12 +4,14 @@ import helmet from 'helmet'
 import { pinoHttp } from 'pino-http'
 import { errorHandler, notFound } from './middleware/errorHandler'
 import { healthRouter, type HealthDeps } from './routes/health'
+import { whatsappWebhookRouter, type WhatsappWebhookDeps } from './webhooks/whatsapp'
 import type { Logger } from './logger'
 
 export interface AppDeps extends HealthDeps {
   logger: Logger
   /** Origins allowed to call the API from a browser (the dashboard). */
   corsOrigins: string[]
+  whatsapp: WhatsappWebhookDeps
 }
 
 /**
@@ -17,10 +19,9 @@ export interface AppDeps extends HealthDeps {
  *
  * Middleware order matters and is fixed here:
  *   1. security headers   2. request logging   3. health (no CORS, no body)
- *   4. CORS               5. JSON body         6. /api/v1 routes
- *   7. 404                8. error handler
- * The WhatsApp webhook (Phase 1) mounts before step 5: it needs the raw body
- * to verify Meta's signature.
+ *   4. webhooks (raw body, signature-checked; no CORS: servers call them)
+ *   5. CORS               6. JSON body         7. /api/v1 routes
+ *   8. 404                9. error handler
  */
 export function createApp(deps: AppDeps) {
   const app = express()
@@ -38,6 +39,7 @@ export function createApp(deps: AppDeps) {
   )
 
   app.use(healthRouter(deps))
+  app.use(whatsappWebhookRouter(deps.whatsapp))
 
   app.use(cors({ origin: deps.corsOrigins, credentials: true }))
   app.use(express.json({ limit: '1mb' }))

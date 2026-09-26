@@ -22,17 +22,21 @@ afterAll(async () => {
   await client.close()
 })
 
-describe('first migration', () => {
-  it('creates the Phase 0 tables', async () => {
+describe('migrations', () => {
+  it('creates the tables so far (Phase 0 core + Phase 1 WhatsApp)', async () => {
     const result = await db.execute<{ table_name: string }>(
       sql`select table_name from information_schema.tables where table_schema = 'public' order by 1`,
     )
     expect(result.rows.map((r) => r.table_name)).toEqual([
+      'contacts',
+      'conversations',
       'memberships',
+      'messages',
       'organizations',
       'plans',
       'super_admins',
       'users',
+      'whatsapp_accounts',
     ])
   })
 
