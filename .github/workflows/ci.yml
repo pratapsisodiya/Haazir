@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Typecheck, lint, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
+
+  database:
+    # The unit tests run migrations on in-process PGlite; this proves the same
+    # migrations and seed on a real Postgres 16 + pgvector, and that the API
+    # comes up ready against it.
+    name: Migrate, seed and boot against real services
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: haazir
+          POSTGRES_PASSWORD: haazir
+          POSTGRES_DB: haazir
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U haazir" --health-interval 5s --health-timeout 3s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      APP_URL: http://localhost:5173
+      API_URL: http://localhost:4000
+      DATABASE_URL: postgres://haazir:haazir@localhost:5432/haazir
+      REDIS_URL: redis://localhost:6379
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:migrate
+      - name: Migrations are idempotent
+        run: pnpm db:migrate
+      - run: pnpm db:seed
+      - name: Seed is idempotent
+        run: pnpm db:seed
+      - name: API boots and reports ready
+        run: |
+          pnpm --filter @haazir/api build
+          node apps/api/dist/index.js &
+          for i in $(seq 1 20); do
+            curl -sf http://localhost:4000/ready && exit 0
+            sleep 1
+          done
+          echo "API never became ready" && exit 1

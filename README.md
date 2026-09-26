@@ -1,255 +1,94 @@
-# haazir
+# Haazir
 
-Single-page marketing site for **haazir** — a Jaipur studio building WhatsApp AI
-agents for premium Indian businesses. React + Tailwind, no backend: every call
-to action is a `wa.me` link.
+A done-for-you WhatsApp AI assistant for coaching institutes in tier-2/3 India: instant replies at
+any hour, demo booking and fee reminders, all on the institute's own WhatsApp number.
 
-## Running it
+The full product spec is in [`docs/HAAZIR_SPEC.md`](docs/HAAZIR_SPEC.md) (original PDF alongside).
+It is built in phases; [`PROGRESS.md`](PROGRESS.md) shows where things stand.
+
+## Repository
+
+```
+apps/
+  api/          Express 5 API: /health, /ready, /api/v1 (routes arrive from Phase 1)
+  worker/       BullMQ job processors (Phase 0: a heartbeat on the `system` queue)
+  dashboard/    React 19 + Vite PWA for institute owners and staff
+  site/         Public marketing site, live on Vercel (Vite/React; moves to Astro in Phase 6)
+packages/
+  shared/       zod-validated env, error codes, constants, money helpers
+  db/           Drizzle schema, SQL migrations, seed data
+docs/           Product spec
+```
+
+## Run it locally
+
+You need Node 22, pnpm 10 (`corepack enable`) and Docker.
 
 ```bash
-npm install
-npm run dev      # http://localhost:5173
-npm run build    # static output in dist/
-npm run preview
+pnpm install
+cp .env.example .env          # defaults work for local development
+pnpm services:up              # Postgres 16 + pgvector, Redis 7, Mailpit
+pnpm db:migrate
+pnpm db:seed                  # demo institute: Shiksha Computer Institute, Sikar
+pnpm dev                      # api :4000, worker, dashboard :5173
 ```
 
-## Layout
+Then open:
 
-```
-src/
-  App.jsx                  section order
-  index.css                design tokens, grid/marquee/slider styles, reduced-motion rules
-  lib/
-    site.js                number, email, and the pre-filled WhatsApp openers  <- edit before launch
-    segments.js            the outreach variants (/jewellers, /clinics, ...)   <- your copy lives here
-    campaign.js            reads the segment + ?ref= tag out of the URL, once
-    images.js              photography + alt text          <- edit before launch
-    format.js              Indian number formatting (lakh / crore, 2-2-3 commas)
-    hooks.js               reduced motion, animated numbers, sticky-scroll activation
-  components/
-    Brand.jsx              jharokha mark, wordmark, buttons (all SVG, no image files)
-    Thread.jsx             plays a scripted thread out, message by message
-    Hero.jsx               headline + the thread: the demo IS the hero
-    SegmentBar.jsx         one-line "built for", replacing the six-photo marquee
-    Reveal.jsx             fades a block up as it enters view
-    ScrollProgress.jsx     the 2px reading-progress rule at the top
-    Nav.jsx  WhatItDoes.jsx  Calculator.jsx  HowItWorks.jsx
-    Pricing.jsx  Faq.jsx  CallToAction.jsx  Footer.jsx
-scripts/
-  og.mjs                   renders the link-preview cards into public/ (run by hand)
-  icons.mjs                renders the home-screen icons into public/ (run by hand)
-  pages.mjs                post-build: one static page per segment, own meta tags
-public/
-  manifest.webmanifest     makes the site installable on a phone
-  sw.js                    offline fallback; network-first so it cannot pin stale HTML
+| URL                                  | What                                                   |
+| ------------------------------------ | ------------------------------------------------------ |
+| http://localhost:5173                | Dashboard shell (Hindi by default)                     |
+| http://localhost:5173/dev/components | Every component in light/dark and Hindi/English        |
+| http://localhost:4000/health         | Liveness: the process is up                            |
+| http://localhost:4000/ready          | Readiness: Postgres, Redis, and the worker's heartbeat |
+| http://localhost:8025                | Mailpit, for emails the app sends locally              |
+
+The marketing site runs separately: `pnpm --filter @haazir/site dev` (port 4321).
+
+No Docker? Any Postgres 16 and Redis 7 will do. Point `DATABASE_URL` and `REDIS_URL` at them.
+
+## Checks
+
+```bash
+pnpm typecheck
+pnpm lint
+pnpm test          # unit + integration; migrations run on in-process PGlite, no Docker needed
+pnpm build
+pnpm format:check
 ```
 
-## Before launch
+CI (`.github/workflows/ci.yml`) runs all of these. A second job migrates and seeds a real
+Postgres 16 + pgvector (twice, to prove both are idempotent) and checks that the built API
+reports ready.
 
-1. **`src/lib/site.js`** — replace `91XXXXXXXXXX` with the real WhatsApp
-   Business number, and set the contact email. Every CTA reads from this one
-   file. `SITE_URL` there, and the hardcoded domain in `index.html` +
-   `scripts/pages.mjs`, need the real domain once you have one — they are what
-   the link-preview card points at.
-2. **Calculator assumptions** — `AFTER_HOURS_SHARE` (34%) and `RECOVERY_RATE`
-   (12%) live at the top of `Calculator.jsx` and are printed under the sliders.
-   Change the constants and the copy updates itself.
+## Manual test checklist (Phase 0)
 
-## Design rules this codebase holds to
+1. `pnpm dev`, then open `/ready`: `database`, `redis` and (within a minute) `worker` are `ok`.
+2. Stop Redis (`docker compose stop redis`): `/ready` returns 503 with `redis: down`, while
+   `/health` stays 200. Start it again: `/ready` recovers without restarting anything, and the
+   worker's heartbeat comes back within a minute.
+3. Open the dashboard on a phone-sized window: top bar, five bottom tabs. Tap **और**: a bottom
+   sheet with the other nine screens, plus language and theme.
+4. Switch to English, then to Dark. Reload: both choices stick, with no white flash.
+5. Widen to ≥ 1024px: a sidebar replaces the tabs, and the active item has a madder strip on
+   its left edge.
+6. Open `/dev/components`: four panels (light and dark, Hindi and English). The ledger numbers
+   count up once. With reduced motion turned on in the OS, they appear without counting.
+7. Tab through the page with the keyboard: every control shows a blue focus ring.
 
-- The page is a single light theme end to end: `#F7F7F4` sections alternating
-  with `#FFFFFF`, and `#F1EFE9` ("stone") for the panels that need to sit apart
-  — the compliance card, the calculator result and the closing CTA.
-- Terracotta is an accent only — buttons, one word in the hero headline, icon
-  strokes, one card border. Never a background wash.
-- Two terracotta shades, for contrast rather than decoration: `#D2603F` for
-  large type, icon strokes, borders and glows; `#A8482B` (`clay-deep`) for
-  filled buttons and any terracotta text under 24px. `#D2603F` only reaches
-  3.6:1 on off-white and 3.8:1 behind white text, so it fails WCAG AA at body
-  sizes; `#A8482B` clears it at 5.4:1 and 5.7:1.
-- Headlines: weight 500, `-0.04em` tracking, 0.95–1.05 leading. Body 17px/1.65.
-- Nothing animates under `prefers-reduced-motion: reduce` — the marquee stops,
-  the counters snap, scrolling is not smoothed.
-- No fake testimonials, client logos or statistics anywhere on the page. The
-  marquee captions name customer *segments* we build for, not clients.
-- Every run of text on the page clears WCAG AA against its actually-painted
-  backdrop (verified by compositing each ancestor background, not by eye).
-- **Motion is restrained and has to earn its place.** Still banned: glassmorphism
-  (translucent-plus-blur) anywhere, grain/noise texture, ambient glow behind
-  every panel, and anything that floats or breathes on a loop. The only two
-  terracotta glows are the ones the original brief asked for — top-left of the
-  hero, and behind the hero photo.
-  What motion there is: a short fade-up as sections enter view (`Reveal`, 14px
-  and 600ms — the page settling, not an effect), a reading-progress rule, 26px
-  of parallax drift on the hero photo, and the conversation replaying itself.
-  Every one of them is off under `prefers-reduced-motion`, and none of them
-  gate content — a visitor who never sees an animation still reads the whole
-  page.
+## Database
 
-## Interaction that stayed
+Schema changes: edit `packages/db/src/schema`, then
 
-- **Sticky nav**, transparent until the page has scrolled (`useScrolled` in
-  `lib/hooks.js`), then a solid white bar with a border and a resting shadow
-  — no blur. A real mobile menu: hamburger → slide-down panel, closes on
-  Escape/resize/link-click, locks body scroll while open. `Nav` is rendered
-  at the `App.jsx` level, not inside `Hero` — `Hero` uses `overflow-hidden`
-  for its grid/glow, which would otherwise clip the nav's stickiness the
-  moment you scrolled past it.
-- **`PrimaryCTA`'s base classes force `inline-flex` unconditionally.** A call
-  site that tries to override it with `hidden sm:inline-flex` is stacking a
-  second, unconditional `display` utility on the same element — cascade
-  order (not JSX order) decides which wins, so that override is not
-  reliable. Where a `PrimaryCTA` needs to be hidden/shown responsively (the
-  desktop-only nav button), wrap it in `<div className="hidden sm:block">`
-  instead of passing display utilities through `className`.
+```bash
+pnpm db:generate --name describe_the_change   # writes SQL to packages/db/migrations
+pnpm db:migrate
+```
 
-## The outreach kit
+Commit the generated SQL. Money is integer paise; ids are Postgres-generated uuids.
 
-This site is an outbound asset: it gets pasted into a WhatsApp chat or opened
-in front of someone at their counter. Everything below exists for that, not for
-search traffic.
+## Deploying the marketing site
 
-- **Link previews.** `index.html` carries the full og:/twitter: set, and
-  `public/og*.png` are the cards themselves. Without these, a pasted link shows
-  as bare text and reads as spam — which is the single cheapest way to lose a
-  cold prospect. Regenerate the cards with `npm run og` after a wording or
-  brand change (needs `npm i -D playwright-core`; it is deliberately not a
-  default dependency, since the PNGs are committed).
-- **One page per segment.** `/jewellers`, `/clinics`, `/hotels`, `/coaching`.
-  Each is a real file in `dist/`, written by `scripts/pages.mjs` after the
-  Vite build, carrying its own title, description and og:image — a crawler
-  never runs the JS, so client-side routing would make every link preview
-  identically. The bundle is shared; `lib/campaign.js` reads the path at
-  runtime and swaps the subhead, the sample conversation, which photo the
-  strip leads with, and what the calculator opens tuned to. Add or edit
-  variants in `lib/segments.js` — no other file needs touching.
-- **Every CTA opens a started conversation.** `whatsappLink(context)` in
-  `lib/site.js` pre-fills the message, worded per button and per segment, so
-  the prospect never lands in an empty thread: the pricing button asks about
-  Build + Run, the closing one leaves the cursor after "here's an enquiry we
-  missed:", the calculator one carries the figure.
-- **`?ref=` tags the outreach round.** `haazir.example/jewellers?ref=johari-1`
-  appends `(ref: johari-1)` to whatever the prospect sends you, so replies are
-  attributable to a batch without any analytics. Stripped to word characters
-  and 40 chars, since it ends up visible in someone's message.
-- **A shareable calculator.** The sliders write to `?e=` and `?t=`, and "Copy
-  link with these numbers" hands you a URL that opens on the prospect's own
-  figures. Dial in their enquiry volume and ticket size, send the link, let
-  the page make the argument. The URL stays clean until a slider actually
-  moves, so an untouched outreach link is not cluttered.
-- **An FAQ that pre-empts the DM round-trips** — the ban question, the
-  number-migration question, the "what if it says something wrong" question.
-  Eight of them, in `Faq.jsx`.
-
-Segment calculator defaults (`lib/segments.js`) are deliberately conservative.
-The model multiplies up quickly, and an opening figure that reads as hype costs
-more trust than a big number buys attention.
-
-## Motion, and how it fails safe
-
-`Reveal` starts its children at `opacity-0`, which is the one pattern here that
-could actually hide content, so it is worth knowing how it cannot:
-
-- `useInView` sets itself to visible when there is no `IntersectionObserver` at
-  all, rather than waiting for a callback that will never come.
-- The observer latches — once seen, always visible — so nothing flickers back
-  out on the way past.
-- Its threshold is `0` with a negative bottom `rootMargin`, not a fraction. A
-  section taller than the viewport can never show "15% of itself", so a
-  fractional threshold makes tall sections (the comparison table, the FAQ)
-  reveal late or not at all. The margin does the delaying instead, and behaves
-  the same at any height.
-- Under `prefers-reduced-motion` the transition collapses to nothing, so the
-  content appears instantly instead of animating.
-
-`Conversation` plays on a chain of timers. Under reduced motion it skips
-straight to the full thread — the exchange is the content, the timing is
-decoration — and the timers are cleared on unmount so a replay can never race a
-run that is already going.
-
-## Installing it on a phone
-
-This repo builds a **website**, not an Android package. There is no `build.gradle`,
-no `AndroidManifest.xml`, no Capacitor or Cordova, and `npm run build` cannot
-emit an `.apk`. If you see Android's *"App not installed as package appears to
-be invalid"*, it came from some other tool that wrapped the site — not from
-this code.
-
-What it does support is installing straight from the browser, which needs no
-package, no signing key and no store listing:
-
-- **Android (Chrome):** open the site → ⋮ → *Add to Home screen* / *Install app*.
-- **iPhone (Safari):** open the site → Share → *Add to Home Screen*.
-
-It then opens fullscreen with the jharokha icon and no browser bar, and it
-still opens with no signal — handy when you are showing it to someone inside a
-showroom with two bars.
-
-Regenerate the icons with `node scripts/icons.mjs` if the mark ever changes
-(needs `npm i -D playwright-core`; the PNGs are committed so a normal install
-never needs a browser).
-
-### Why the service worker is written the way it is
-
-A worker that serves HTML from cache can pin a stale page on someone's phone
-permanently — worse than having no worker at all. So `public/sw.js` is
-network-first for navigations and only ever caches them as an offline fallback.
-`/assets/*` is content-hashed by Vite, so those filenames never change meaning
-and are the one thing served cache-first. Everything else, including Google
-Fonts, is left alone. There is a test for exactly this: change the built HTML
-with the worker already installed, reload, and the new HTML must win.
-
-Bump `VERSION` in `sw.js` to evict every cache on the next visit.
-
-### If you genuinely need a real `.apk`
-
-Two honest routes, both more work than the above:
-
-1. **Trusted Web Activity** (Bubblewrap) — a thin Android shell around this
-   exact site. Needs a Play Console account, a signing key, and a
-   `.well-known/assetlinks.json` on the domain to prove you own it.
-2. **Capacitor** — wraps the built `dist/` into a native project you compile in
-   Android Studio. Heavier, and only worth it if you later want camera,
-   push or contacts.
-
-Neither is a five-minute job, and neither is worth doing before the site has a
-real domain and a real WhatsApp number on it.
-
-## Why the page is shaped this way
-
-It was rebuilt around one measurement. The previous version ran **12,607px on a
-phone — 14.9 screens of scrolling** — across eleven sections, and the single
-most persuasive thing on it, the conversation playing itself out, sat fourth.
-A jeweller reading mid-shift was never going to reach it, let alone the price.
-
-The rebuild:
-
-- **The demo is the hero.** `Thread` moved into `Hero`, so the exchange plays
-  the moment you land. On a phone the blocks run headline → thread → buttons
-  rather than headline → buttons → thread: proof before the ask, and it lifts
-  the card ~300px so it is properly on screen instead of peeking over the fold
-  by an inch. That is why the hero uses explicit grid placement rather than two
-  nested columns — the desktop order and the phone order genuinely differ.
-- **The photo strip became one line.** Six stock photos cost a section to say
-  something `SegmentBar` says in 165px, and every one of them was an unverified
-  Unsplash placeholder. With the hero photo gone too, the page now carries **no
-  photography at all** — which also retired `Photo.jsx`, `lib/images.js` and the
-  whole dead-URL failure mode. If you want photography back once you have
-  licensed shots, it is an additive change, not a rescue.
-- **The sticky how-it-works is now three columns.** Pinning the heading and
-  dimming each step cost 2,169px of desktop scrolling to deliver three short
-  paragraphs. The paragraphs were the point.
-- **The comparison table became two paragraphs inside pricing.** Seven rows that
-  had to scroll sideways on a phone were answering two objections — so they are
-  now two answers, sitting next to the price where the objection actually
-  surfaces.
-- **The bento became three equal cards**, with compliance as the strip
-  underneath. It is a reassurance, not a fourth feature.
-
-Result: **desktop 10,236px → 6,087px (11.4 → 6.8 screens, 41% shorter)**, phone
-12,607px → 9,189px. Eleven sections became seven.
-
-Deleted in the process, and why nothing references them: `Marquee.jsx`,
-`Conversation.jsx` (became `Thread.jsx` in the hero), `Comparison.jsx`,
-`Photo.jsx`, `lib/images.js`, plus the `useParallax` and `useActiveInViewport`
-hooks that only existed to drive the hero photo and the sticky scroller.
+Vercel builds `apps/site` from this repo (`vercel.json`: `pnpm --filter @haazir/site build`,
+output `apps/site/dist`). The API, worker and dashboard deploys are set up in Phase 6
+(spec §21).

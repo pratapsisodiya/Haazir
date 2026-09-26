@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="hi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#F6F5F1" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#12162A" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>Haazir</title>
+    <script>
+      // Apply the saved theme and language before first paint, so a dark-mode
+      // user never sees a white flash. Mirrors lib/preferences.ts.
+      try {
+        var saved = JSON.parse(localStorage.getItem('haazir-preferences') || '{}').state || {}
+        if (saved.theme === 'light' || saved.theme === 'dark')
+          document.documentElement.dataset.theme = saved.theme
+        if (saved.language === 'en' || saved.language === 'hi')
+          document.documentElement.lang = saved.language
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

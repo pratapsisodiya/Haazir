@@ -1,0 +1,7 @@
+pnpm-lock.yaml
+dist
+.turbo
+coverage
+packages/db/migrations
+apps/site
+docs/HAAZIR_SPEC.md

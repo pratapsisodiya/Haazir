@@ -1,0 +1,10 @@
+packages:
+  - apps/*
+  - packages/*
+
+# pnpm 10 runs no dependency install scripts unless listed here.
+onlyBuiltDependencies:
+  - esbuild
+# Optional native speed-up for BullMQ's msgpackr; the JS fallback is fine.
+ignoredBuiltDependencies:
+  - msgpackr-extract

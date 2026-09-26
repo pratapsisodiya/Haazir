@@ -1,0 +1,165 @@
+/*
+ * Haazir design tokens: the modern bahi-khata (spec §14).
+ *
+ * Tailwind's default palette, type scale and shadows are cleared, so the only
+ * colours, sizes and shadows a component can use are the ones below. A class
+ * like `bg-blue-500` or `text-xs` simply doesn't exist here.
+ */
+@import 'tailwindcss';
+
+@theme {
+  --color-*: initial;
+  --text-*: initial;
+  --shadow-*: initial;
+
+  --font-display: 'Anek Devanagari Display', 'Mukta', system-ui, sans-serif;
+  --font-sans: 'Mukta', system-ui, sans-serif;
+
+  --color-ink: #1c2340; /* Sanganeri indigo */
+  --color-ink-muted: #5a6078;
+  --color-paper: #f6f5f1; /* limewash */
+  --color-surface: #ffffff;
+  --color-rule: #e2ddd3; /* sandstone */
+  --color-madder-50: #f8e9e4;
+  --color-madder-600: #a63b26;
+  --color-madder-700: #8e3120;
+  --color-pottery-50: #e3f2f3;
+  --color-pottery-600: #16727c; /* blue pottery */
+  --color-marigold-50: #fbf1dc;
+  --color-marigold-500: #d99a1e;
+  --color-danger-600: #b42318;
+  --color-focus: #2f5bd3;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* §14.3 type scale. Nothing smaller than 14px exists. */
+  --text-display: 2.5rem; /* 40/44 Aaj ka hisaab numbers */
+  --text-display--line-height: 2.75rem;
+  --text-display--font-weight: 650;
+  --text-h1: 1.625rem; /* 26/32 page title */
+  --text-h1--line-height: 2rem;
+  --text-h1--font-weight: 600;
+  --text-h2: 1.25rem; /* 20/26 section */
+  --text-h2--line-height: 1.625rem;
+  --text-h2--font-weight: 600;
+  --text-h3: 1.0625rem; /* 17/24 card title */
+  --text-h3--line-height: 1.5rem;
+  --text-h3--font-weight: 600;
+  --text-body: 1rem; /* 16/26: Devanagari needs the extra leading */
+  --text-body--line-height: 1.625rem;
+  --text-small: 0.875rem; /* 14/20 meta */
+  --text-small--line-height: 1.25rem;
+  --text-button: 1rem; /* 16/20 */
+  --text-button--line-height: 1.25rem;
+  --text-button--font-weight: 600;
+
+  /* §14.4 radius by hierarchy, not one radius everywhere. */
+  --radius-control: 10px;
+  --radius-card: 14px;
+  --radius-sheet: 20px;
+  --radius-ledger: 6px; /* like a book corner */
+
+  /* Only floating things get a shadow, and it's indigo-tinted, not grey. */
+  --shadow-float: 0 8px 24px -12px rgb(28 35 64 / 0.28);
+
+  --animate-sheet-up: sheet-up 200ms ease-out;
+  --animate-sheet-in: sheet-in 200ms ease-out;
+  --animate-fade-in: fade-in 200ms ease-out;
+
+  @keyframes sheet-up {
+    from {
+      transform: translateY(100%);
+    }
+  }
+  @keyframes sheet-in {
+    from {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+/*
+ * Dark theme. Three ways in: the OS preference (unless the user picked light),
+ * an explicit `data-theme="dark"` on <html>, or `data-theme` on any element,
+ * which /dev/components uses to show both themes side by side.
+ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-ink: #e9ebf2;
+    --color-ink-muted: #a3a8ba;
+    --color-paper: #12162a;
+    --color-surface: #1a1f36;
+    --color-rule: #2c3350;
+    --color-madder-50: #3a2220;
+    --color-madder-600: #d9674e;
+    --color-madder-700: #e0765e;
+    --color-pottery-50: #163538;
+    --color-pottery-600: #4fb3bc;
+    --color-marigold-50: #3a301a;
+    --color-marigold-500: #e8b44a;
+    --color-danger-600: #f07166;
+    --color-focus: #8fa8f0;
+    color-scheme: dark;
+  }
+}
+
+[data-theme='dark'] {
+  --color-ink: #e9ebf2;
+  --color-ink-muted: #a3a8ba;
+  --color-paper: #12162a;
+  --color-surface: #1a1f36;
+  --color-rule: #2c3350;
+  --color-madder-50: #3a2220;
+  --color-madder-600: #d9674e;
+  --color-madder-700: #e0765e;
+  --color-pottery-50: #163538;
+  --color-pottery-600: #4fb3bc;
+  --color-marigold-50: #3a301a;
+  --color-marigold-500: #e8b44a;
+  --color-danger-600: #f07166;
+  --color-focus: #8fa8f0;
+  color-scheme: dark;
+}
+
+/* Needed only for a light panel inside a dark page (/dev/components). */
+:root [data-theme='light'] {
+  --color-ink: #1c2340;
+  --color-ink-muted: #5a6078;
+  --color-paper: #f6f5f1;
+  --color-surface: #ffffff;
+  --color-rule: #e2ddd3;
+  --color-madder-50: #f8e9e4;
+  --color-madder-600: #a63b26;
+  --color-madder-700: #8e3120;
+  --color-pottery-50: #e3f2f3;
+  --color-pottery-600: #16727c;
+  --color-marigold-50: #fbf1dc;
+  --color-marigold-500: #d99a1e;
+  --color-danger-600: #b42318;
+  --color-focus: #2f5bd3;
+  color-scheme: light;
+}
+
+/* §14.5 ledger ruling: a 1px rule every 44px, behind lists in Home, Fees, Leads. */
+@utility ledger-rules {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 43px,
+    var(--color-rule) 43px 44px
+  );
+}
+
+/* Page titles sit tight and confident in Anek's semi-condensed width. */
+@utility font-display-tight {
+  font-family: var(--font-display);
+  font-stretch: 87.5%;
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}

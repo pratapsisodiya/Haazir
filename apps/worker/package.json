@@ -1,0 +1,27 @@
+{
+  "name": "@haazir/worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/index.ts",
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@haazir/shared": "workspace:*",
+    "bullmq": "^5.81.0",
+    "ioredis": "^5.11.0",
+    "pino": "^10.3.0",
+    "zod": "^4.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.0",
+    "pino-pretty": "^13.1.0",
+    "tsup": "^8.5.0",
+    "tsx": "^4.23.0",
+    "vitest": "^4.1.0"
+  }
+}

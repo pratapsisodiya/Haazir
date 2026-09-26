@@ -1,0 +1,29 @@
+# Haazir: notes for coding agents
+
+Read `docs/HAAZIR_SPEC.md` (source: `docs/HAAZIR_SPEC.pdf`) and `PROGRESS.md` before any work.
+Build **one phase at a time** (spec §22). At the end of a phase, list files changed, commands, manual
+test steps, tests added and known gaps (§23), then stop.
+
+## Layout
+
+- `apps/api`: Express 5. `src/app.ts` builds the app (tests use it directly), `src/index.ts` boots it.
+- `apps/worker`: BullMQ processors. One `Worker` per queue; queue names live in `packages/shared/src/queues.ts`.
+- `apps/dashboard`: React 19 + Vite + Tailwind v4. Tokens in `src/styles/tokens.css`, components in `src/components`, gallery at `/dev/components` (dev builds only).
+- `apps/site`: public marketing site, deployed to Vercel from this repo (see `vercel.json`). Plain Vite/React JS until it becomes Astro in Phase 6. Not linted or formatted by the root config.
+- `packages/shared`: zod env (`env.ts`), error codes, constants, money helpers. Browser-safe except `./env`.
+- `packages/db`: Drizzle schema (`src/schema`), generated SQL in `migrations/`, idempotent `seed.ts`.
+
+## Rules that bite
+
+- Never read `process.env` outside `packages/shared/src/env.ts`. Add new variables there and to `.env.example`.
+- Money is integer paise. Phone numbers are E.164 without "+". Times are stored in UTC and shown in Asia/Kolkata.
+- Every tenant table has `org_id` + an index, and every query is scoped by it.
+- Schema change: edit `packages/db/src/schema`, run `pnpm db:generate --name <what>`, and commit the SQL. Never edit a migration that has already been applied anywhere.
+- Workspace packages ship TypeScript source. If an app bundles one, it must also list that package's npm dependencies (see `apps/api/tsup.config.ts`).
+- Don't put `NODE_ENV` in `.env`: Vite reads the same file and would build the dashboard in dev mode.
+- Design (§14): tokens only (Tailwind's default palette and type scale are removed), status = icon + label + colour, no gradients, no card hover motion, no section fade-ins, no eyebrow labels, no all-caps, no trailing arrows. Hindi-first copy in `locales/hi.json` with the same keys as `en.json` (a test checks this).
+- Ask Pratap before any decision that changes cost, pricing, or how personal data is stored.
+
+## Checks
+
+`pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm format:check`, the same as CI.

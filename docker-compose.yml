@@ -1,0 +1,42 @@
+# Local services for development. `pnpm services:up` starts them.
+services:
+  postgres:
+    # Postgres 16 with pgvector preinstalled (embeddings arrive in Phase 2).
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: haazir
+      POSTGRES_PASSWORD: haazir
+      POSTGRES_DB: haazir
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U haazir -d haazir']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Catches every email the app sends locally. UI on http://localhost:8025
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+
+volumes:
+  postgres-data:
+  redis-data:

@@ -1,0 +1,82 @@
+{
+  "app": {
+    "name": "Haazir"
+  },
+  "nav": {
+    "main": "Main menu",
+    "home": "Today",
+    "chat": "Chat",
+    "leads": "Leads",
+    "fees": "Fees",
+    "more": "More",
+    "courses": "Courses & batches",
+    "campaigns": "Campaigns",
+    "templates": "Templates",
+    "knowledge": "Teach the bot",
+    "bot": "Bot settings",
+    "reports": "Reports",
+    "team": "Team",
+    "billing": "Billing",
+    "settings": "Settings"
+  },
+  "shell": {
+    "notifications": "Notifications",
+    "moreTitle": "More options",
+    "close": "Close"
+  },
+  "prefs": {
+    "language": "Language",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "Auto"
+  },
+  "home": {
+    "title": "Today's hisaab",
+    "emptyTitle": "Your daily hisaab will show here",
+    "emptyBody": "Once WhatsApp is connected, today's enquiries, demos and fees are written here every day."
+  },
+  "placeholder": {
+    "title": "This part is still being built",
+    "body": "It will be ready soon. Meanwhile, see today's hisaab.",
+    "action": "See today's hisaab"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The link may be old. Start from today's hisaab.",
+    "action": "See today's hisaab"
+  },
+  "sample": {
+    "ledgerTitle": "Today's hisaab",
+    "enquiries": "New enquiries",
+    "botReplies": "Answered by the bot",
+    "botRepliesHint": "average 6 sec",
+    "demos": "Demos booked",
+    "admissions": "Admissions",
+    "fees": "Fees received",
+    "bookDemo": "Book demo",
+    "sendReminder": "Send reminder",
+    "cancel": "Cancel",
+    "deleteData": "Delete contact data",
+    "sending": "Sending…",
+    "studentName": "Student name",
+    "studentNameHint": "As written on WhatsApp",
+    "fee": "Fee (₹)",
+    "feeError": "Fee must be more than 0",
+    "paid": "Paid",
+    "due": "Due",
+    "overdue": "Overdue",
+    "bot": "Bot",
+    "you": "You",
+    "draft": "Draft",
+    "courseTitle": "RS-CIT",
+    "courseBody": "3-month course, fee ₹4,500. Next batch starts Monday.",
+    "emptyLeadsTitle": "No leads yet",
+    "emptyLeadsBody": "When someone messages you on WhatsApp, they show up here. To test, send a message from your own number.",
+    "emptyLeadsAction": "Send a test message"
+  },
+  "settings": {
+    "display": "Display",
+    "displayBody": "These choices apply to this phone or computer only."
+  }
+}

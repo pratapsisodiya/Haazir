@@ -1,0 +1,82 @@
+{
+  "app": {
+    "name": "Haazir"
+  },
+  "nav": {
+    "main": "मुख्य मेनू",
+    "home": "आज",
+    "chat": "चैट",
+    "leads": "लीड्स",
+    "fees": "फ़ीस",
+    "more": "और",
+    "courses": "कोर्स और बैच",
+    "campaigns": "कैंपेन",
+    "templates": "Templates",
+    "knowledge": "बॉट को सिखाएँ",
+    "bot": "बॉट सेटिंग्स",
+    "reports": "रिपोर्ट",
+    "team": "टीम",
+    "billing": "बिलिंग",
+    "settings": "सेटिंग्स"
+  },
+  "shell": {
+    "notifications": "सूचनाएँ",
+    "moreTitle": "और विकल्प",
+    "close": "बंद करें"
+  },
+  "prefs": {
+    "language": "भाषा",
+    "theme": "रंग",
+    "light": "लाइट",
+    "dark": "डार्क",
+    "system": "ऑटो"
+  },
+  "home": {
+    "title": "आज का हिसाब",
+    "emptyTitle": "हिसाब यहाँ दिखेगा",
+    "emptyBody": "WhatsApp जुड़ते ही आज की पूछताछ, डेमो और फ़ीस यहाँ रोज़ लिखी जाएगी।"
+  },
+  "placeholder": {
+    "title": "यह हिस्सा अभी तैयार हो रहा है",
+    "body": "जल्द ही यहाँ काम शुरू हो जाएगा। तब तक आज का हिसाब देखें।",
+    "action": "आज का हिसाब देखें"
+  },
+  "notFound": {
+    "title": "यह पेज नहीं मिला",
+    "body": "हो सकता है लिंक पुराना हो। आज के हिसाब से शुरू करें।",
+    "action": "आज का हिसाब देखें"
+  },
+  "sample": {
+    "ledgerTitle": "आज का हिसाब",
+    "enquiries": "नई पूछताछ",
+    "botReplies": "बॉट ने जवाब दिए",
+    "botRepliesHint": "औसत 6 सेकंड",
+    "demos": "डेमो बुक हुए",
+    "admissions": "एडमिशन",
+    "fees": "फ़ीस मिली",
+    "bookDemo": "डेमो बुक करें",
+    "sendReminder": "रिमाइंडर भेजें",
+    "cancel": "रद्द करें",
+    "deleteData": "कॉन्टैक्ट का डेटा मिटाएँ",
+    "sending": "भेज रहे हैं…",
+    "studentName": "छात्र का नाम",
+    "studentNameHint": "जैसा WhatsApp पर लिखा है",
+    "fee": "फ़ीस (₹)",
+    "feeError": "फ़ीस 0 से ज़्यादा होनी चाहिए",
+    "paid": "जमा",
+    "due": "बाकी",
+    "overdue": "देर हो गई",
+    "bot": "बॉट",
+    "you": "आप",
+    "draft": "ड्राफ़्ट",
+    "courseTitle": "RS-CIT",
+    "courseBody": "3 महीने का कोर्स, फ़ीस ₹4,500। अगला बैच सोमवार से।",
+    "emptyLeadsTitle": "अभी कोई लीड नहीं",
+    "emptyLeadsBody": "जब कोई WhatsApp पर मैसेज करेगा, वह यहाँ दिखेगा। टेस्ट करने के लिए अपने नंबर से मैसेज भेजें।",
+    "emptyLeadsAction": "टेस्ट मैसेज भेजें"
+  },
+  "settings": {
+    "display": "दिखावट",
+    "displayBody": "यह पसंद सिर्फ़ इसी फ़ोन या कंप्यूटर पर लागू होती है।"
+  }
+}

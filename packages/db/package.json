@@ -1,0 +1,31 @@
+{
+  "name": "@haazir/db",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts"
+  },
+  "scripts": {
+    "generate": "drizzle-kit generate",
+    "migrate": "tsx src/migrate.ts",
+    "seed": "tsx src/seed.ts",
+    "studio": "drizzle-kit studio",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@haazir/shared": "workspace:*",
+    "drizzle-orm": "^0.45.0",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.0",
+    "@types/node": "^22.20.0",
+    "@types/pg": "^8.23.0",
+    "drizzle-kit": "^0.31.0",
+    "tsx": "^4.23.0",
+    "vitest": "^4.1.0"
+  }
+}
