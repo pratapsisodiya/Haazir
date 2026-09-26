@@ -1,0 +1,30 @@
+# Address and hours: from the org record and the FAQ documents.
+- id: loc-address
+  tags: [location]
+  turns:
+    - user: 'Institute kahan pe hai?'
+      expect: { intent: location, must_include_any: ['Station Road'], handoff: false }
+
+- id: loc-landmark
+  tags: [location]
+  turns:
+    - user: 'railway station se kitna door hai aapka institute'
+      expect: { intent: location, must_include_any: ['5 minute', '5 min'], handoff: false }
+
+- id: loc-sunday
+  tags: [location]
+  turns:
+    - user: 'Sunday ko khula rehta hai?'
+      expect: { must_include_any: ['9', '1 baje', '1:00'], handoff: false }
+
+- id: loc-parking
+  tags: [location]
+  turns:
+    - user: 'car parking milegi?'
+      expect: { handoff: false, must_include_any: ['two-wheeler', 'Two-wheeler', 'nahi'] }
+
+- id: loc-english-hours
+  tags: [location]
+  turns:
+    - user: 'What are your opening hours?'
+      expect: { language: en, must_include: ['8'], handoff: false }

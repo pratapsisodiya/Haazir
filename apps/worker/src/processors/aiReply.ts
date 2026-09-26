@@ -1,16 +1,21 @@
 import { and, eq, sql } from 'drizzle-orm'
+import {
+  decideReply,
+  markBotReplied,
+  markHandoff,
+  optOutContact,
+  recordTrace,
+  recordUnanswered,
+} from '@haazir/ai-core'
 import { conversations, messages, whatsappAccounts } from '@haazir/db'
 import { queueOutbound, type AiReplyJob } from '@haazir/messaging'
 import { AppError } from '@haazir/shared'
 import type { Deps } from '../deps'
 
-/** Phase 1's whole brain. Phase 2 replaces this processor with the real pipeline (spec §11). */
-export const ECHO_REPLY = 'Namaste! Haazir se jawab.'
-
 /**
- * The `ai-reply` queue. Marks the message read with a typing indicator (so the
- * sender sees someone is on it), then queues the reply through the outbound
- * gate. Does nothing if staff have taken over the chat.
+ * The `ai-reply` queue: runs the brain (spec §11) on one inbound message and
+ * carries out its decision: reply, hand over to staff, confirm an opt-out,
+ * or stay quiet. Every reply goes through the outbound gate like any send.
  */
 export async function processAiReply(deps: Deps, job: AiReplyJob) {
   const [row] = await deps.db
@@ -23,7 +28,6 @@ export async function processAiReply(deps: Deps, job: AiReplyJob) {
     deps.log.warn({ job }, 'ai-reply for a missing message skipped')
     return { replied: false }
   }
-  if (row.conversation.mode !== 'bot') return { replied: false }
 
   // A retried or re-queued job must not answer the same message twice.
   const [already] = await deps.db
@@ -39,33 +43,74 @@ export async function processAiReply(deps: Deps, job: AiReplyJob) {
     .limit(1)
   if (already) return { replied: false }
 
-  // Best effort: a failed read receipt must not stop the reply.
-  if (row.message.waMessageId) {
+  const now = deps.now()
+  const botHasIt =
+    row.conversation.mode === 'bot' ||
+    (row.conversation.mode === 'human' &&
+      !!row.conversation.humanUntil &&
+      row.conversation.humanUntil <= now)
+
+  // Blue ticks + "typing…" while the brain works. Only when the bot is the one
+  // answering: ticks with no reply while staff are away would mislead. Best
+  // effort: a failed read receipt must not stop the reply.
+  if (botHasIt && row.message.waMessageId) {
     await deps
       .graph(row.account)
       .markRead(row.message.waMessageId, { typing: true })
       .catch((err: Error) => deps.log.warn({ err: err.message }, 'markRead failed'))
   }
 
-  try {
-    await queueOutbound(
-      { db: deps.db, outboundQueue: deps.queues.outbound },
-      {
-        orgId: job.orgId,
-        conversationId: row.conversation.id,
-        content: { kind: 'text', body: ECHO_REPLY },
-        sentBy: 'bot',
-        inReplyToMessageId: job.messageId,
-        now: deps.now(),
-      },
-    )
-  } catch (err) {
-    // Opted out or window closed: correct not to reply, nothing to retry.
-    if (err instanceof AppError && (err.code === 'OPTED_OUT' || err.code === 'WINDOW_CLOSED')) {
-      deps.log.info({ code: err.code, conversationId: row.conversation.id }, 'reply not sent')
-      return { replied: false }
+  const decision = await decideReply(
+    { db: deps.db, models: deps.models, now: deps.now, log: deps.log },
+    job,
+  )
+  if (decision.kind === 'silent') return { replied: false, reason: decision.reason }
+
+  const send = async (isOptOutConfirmation = false) => {
+    try {
+      await queueOutbound(
+        { db: deps.db, outboundQueue: deps.queues.outbound },
+        {
+          orgId: job.orgId,
+          conversationId: row.conversation.id,
+          content: decision.content,
+          sentBy: 'bot',
+          inReplyToMessageId: job.messageId,
+          isOptOutConfirmation,
+          now,
+        },
+      )
+      return true
+    } catch (err) {
+      // Opted out or window closed: correct not to reply, nothing to retry.
+      if (err instanceof AppError && (err.code === 'OPTED_OUT' || err.code === 'WINDOW_CLOSED')) {
+        deps.log.info({ code: err.code, conversationId: row.conversation.id }, 'reply not sent')
+        return false
+      }
+      throw err
     }
-    throw err
   }
-  return { replied: true }
+
+  switch (decision.kind) {
+    case 'optout': {
+      await optOutContact(deps.db, row.conversation.contactId, now)
+      const sent = await send(true)
+      await recordTrace(deps.db, job, decision.trace)
+      return { replied: sent, decision: 'optout' }
+    }
+    case 'handoff': {
+      const sent = await send()
+      await markHandoff(deps.db, row.conversation.id, decision.reason, decision.summary, now)
+      if (decision.unanswered) await recordUnanswered(deps.db, job.orgId, decision.unanswered, now)
+      await recordTrace(deps.db, job, decision.trace, { reason: decision.reason })
+      deps.log.info({ conversationId: row.conversation.id, reason: decision.reason }, 'handed over')
+      return { replied: sent, decision: 'handoff', reason: decision.reason }
+    }
+    case 'reply': {
+      const sent = await send()
+      await markBotReplied(deps.db, row.conversation.id, now, decision.clarifyMisses ?? 0)
+      await recordTrace(deps.db, job, decision.trace)
+      return { replied: sent, decision: 'reply' }
+    }
+  }
 }

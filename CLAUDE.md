@@ -15,6 +15,8 @@ test steps, tests added and known gaps (§23), then stop.
 - `packages/channels/whatsapp`: pure Cloud API code (parser, signature, window rules, Graph client). No database.
 - `packages/messaging`: `queueOutbound`, the one place anything is sent from. Never call `GraphClient.send` elsewhere.
 - `packages/storage`: `createStorage(env)`: S3-compatible or local disk.
+- `packages/ai-core`: the brain. `decideReply` decides and writes nothing; `effects.ts` applies decisions. Ingestion, speech-to-text, tools, guardrails and the versioned prompt live here.
+- `evals/`: YAML conversations + runner. A bot bug found in the wild becomes an eval case first.
 
 ## Rules that bite
 
@@ -25,6 +27,9 @@ test steps, tests added and known gaps (§23), then stop.
 - Workspace packages ship TypeScript source. If an app bundles one, it must also list that package's npm dependencies (see `apps/api/tsup.config.ts`).
 - Worker processors take a `Deps` object (db, kv, locks, queues, storage, graph) so tests run them on PGlite with fakes. Keep them idempotent: Meta redelivers, BullMQ retries.
 - BullMQ job ids can't contain `:`.
+- The bot quotes fees, dates and seats only from tool results (the database), never from documents or memory; the number guardrail enforces it. New facts the bot needs = a new tool, not prompt text.
+- Changing the answer prompt: bump `ANSWER_PROMPT_VERSION` and run `pnpm evals`.
+- Tests use `createTestDb()` from `@haazir/db/testing` (PGlite + pgvector) and the AI SDK's mock models; no test calls a real LLM.
 - Don't put `NODE_ENV` in `.env`: Vite reads the same file and would build the dashboard in dev mode.
 - Design (§14): tokens only (Tailwind's default palette and type scale are removed), status = icon + label + colour, no gradients, no card hover motion, no section fade-ins, no eyebrow labels, no all-caps, no trailing arrows. Hindi-first copy in `locales/hi.json` with the same keys as `en.json` (a test checks this).
 - Ask Pratap before any decision that changes cost, pricing, or how personal data is stored.

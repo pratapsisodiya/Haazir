@@ -2,10 +2,17 @@ import { eq } from 'drizzle-orm'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { contacts, conversations, messages, organizations, whatsappAccounts } from '@haazir/db'
+import {
+  aiTraces,
+  contacts,
+  conversations,
+  messages,
+  organizations,
+  whatsappAccounts,
+} from '@haazir/db'
 import { queueOutbound } from '@haazir/messaging'
 import { AppError } from '@haazir/shared'
-import { ECHO_REPLY, processAiReply } from '../processors/aiReply'
+import { processAiReply } from '../processors/aiReply'
 import { processInbound, StatusNotYetMatched } from '../processors/inbound'
 import { processMedia } from '../processors/media'
 import { processOutbound } from '../processors/outbound'
@@ -14,7 +21,9 @@ import {
   inboundImage,
   inboundReaction,
   inboundText,
+  inboundVoiceNote,
   mockGraph,
+  MOCK_REPLY,
   statusUpdate,
   TOKEN,
 } from './harness'
@@ -39,8 +48,8 @@ async function runQueues() {
   for (const job of h.queues.outbound.jobs.splice(0)) await processOutbound(h.deps, job.data)
 }
 
-describe('inbound → reply (the Phase 1 "done when")', () => {
-  it('stores the message, opens the 24h window and replies "Namaste! Haazir se jawab."', async () => {
+describe('inbound → brain → reply', () => {
+  it('stores the message, opens the 24h window, and the brain replies', async () => {
     const result = await processInbound(h.deps, { payload: inboundText({ id: 'wamid.IN1' }) })
     expect(result).toEqual({ stored: 1, duplicates: 0, statuses: 0, dropped: 0 })
 
@@ -67,13 +76,13 @@ describe('inbound → reply (the Phase 1 "done when")', () => {
     expect(graph.sent[0]).toMatchObject({
       to: '919812345678',
       auth: `Bearer ${TOKEN}`,
-      body: { type: 'text', text: { body: ECHO_REPLY } },
+      body: { type: 'text', text: { body: MOCK_REPLY } },
     })
 
     const out = await h.db.select().from(messages).where(eq(messages.direction, 'out'))
     expect(out).toEqual([
       expect.objectContaining({
-        body: ECHO_REPLY,
+        body: MOCK_REPLY,
         sentBy: 'bot',
         status: 'queued',
         waMessageId: 'wamid.OUT1',
@@ -304,6 +313,98 @@ describe('outbound failures', () => {
     await processOutbound(h.deps, job)
     await processOutbound(h.deps, job) // a retried job after a crash
     expect(graph.sent).toHaveLength(1)
+  })
+})
+
+describe("the brain's decisions, carried out", () => {
+  it('writes an ai_trace for every reply', async () => {
+    await processInbound(h.deps, { payload: inboundText({ id: 'wamid.IN1' }) })
+    await runQueues()
+    const [trace] = await h.db.select().from(aiTraces)
+    expect(trace).toMatchObject({
+      orgId: h.org.id,
+      intent: 'other',
+      model: 'mock-smart',
+      handedOff: false,
+      promptVersion: 'answer-v1',
+    })
+  })
+
+  it('STOP: one confirmation, the contact opted out, and silence after that', async () => {
+    await processInbound(h.deps, { payload: inboundText({ id: 'wamid.IN1', body: 'STOP' }) })
+    await runQueues()
+    expect(graph.sent).toHaveLength(1)
+    expect(graph.sent[0]!.body).toMatchObject({
+      text: { body: "Okay, we won't message you again." },
+    })
+    const [contact] = await h.db.select().from(contacts)
+    expect(contact?.optInStatus).toBe('opted_out')
+
+    await processInbound(h.deps, {
+      payload: inboundText({ id: 'wamid.IN2', body: 'aur fees?', ts: 1790407260 }),
+    })
+    await runQueues()
+    expect(graph.sent).toHaveLength(1)
+  })
+
+  it('handoff: tells the person, puts the chat in human mode for 2 hours, and counts the question', async () => {
+    h.deps.models = null // no AI configured: everything goes to staff
+    await processInbound(h.deps, {
+      payload: inboundText({ id: 'wamid.IN1', body: 'Hostel hai kya?' }),
+    })
+    await runQueues()
+    expect(graph.sent[0]!.body).toMatchObject({
+      text: { body: expect.stringContaining('Main aapki baat team se karwa raha hoon') },
+    })
+    const [conversation] = await h.db.select().from(conversations)
+    expect(conversation).toMatchObject({ mode: 'human', handoffReason: 'ai_unavailable' })
+    expect(conversation!.humanUntil!.getTime() - h.deps.now().getTime()).toBe(2 * 60 * 60 * 1000)
+    const [trace] = await h.db.select().from(aiTraces)
+    expect(trace).toMatchObject({ handedOff: true, handoffReason: 'ai_unavailable' })
+
+    // While staff have it, the bot neither replies nor shows read ticks.
+    graph.reset()
+    await processInbound(h.deps, {
+      payload: inboundText({ id: 'wamid.IN2', body: 'Hello?', ts: 1790407260 }),
+    })
+    await runQueues()
+    expect(graph.sent).toHaveLength(0)
+    expect(graph.reads).toHaveLength(0)
+  })
+})
+
+describe('voice notes', () => {
+  it('are transcribed first, then answered like typed text', async () => {
+    const heard: string[] = []
+    h.deps.stt = {
+      id: 'fake',
+      transcribe: async (audio, mime) => {
+        heard.push(`${new TextDecoder().decode(audio)} ${mime}`)
+        return { text: 'RS-CIT ki fees kitni hai' }
+      },
+    }
+    await processInbound(h.deps, { payload: inboundVoiceNote('wamid.V1') })
+    expect(h.queues.aiReply.jobs).toHaveLength(0) // waits for the transcript
+
+    await processMedia(h.deps, h.queues.media.jobs[0]!.data)
+    expect(heard).toEqual(['OggS audio/ogg'])
+    const [voice] = await h.db.select().from(messages).where(eq(messages.waMessageId, 'wamid.V1'))
+    expect(voice?.transcript).toBe('RS-CIT ki fees kitni hai')
+
+    await runQueues()
+    expect(graph.sent).toHaveLength(1)
+    expect(graph.sent[0]!.body).toMatchObject({ text: { body: MOCK_REPLY } })
+  })
+
+  it('without speech-to-text, go to staff with an acknowledgement', async () => {
+    await processInbound(h.deps, { payload: inboundVoiceNote('wamid.V1') })
+    await processMedia(h.deps, h.queues.media.jobs[0]!.data)
+    await runQueues()
+    expect(graph.sent[0]!.body).toMatchObject({
+      text: { body: 'Voice note mil gaya. Team sun kar reply karegi.' },
+    })
+    const [conversation] = await h.db.select().from(conversations)
+    expect(conversation?.handoffReason).toBe('voice_unclear')
   })
 })
 

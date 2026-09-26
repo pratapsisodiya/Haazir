@@ -31,4 +31,5 @@ export const JOB_OPTIONS = {
   aiReply: { attempts: 2, backoff: { type: 'exponential', delay: 2000 }, ...keep },
   outbound: { attempts: 5, backoff: { type: 'exponential', delay: 1000 }, ...keep },
   media: { attempts: 3, backoff: { type: 'exponential', delay: 5000 }, ...keep },
+  ingest: { attempts: 3, backoff: { type: 'exponential', delay: 10000 }, ...keep },
 } as const

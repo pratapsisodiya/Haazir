@@ -118,6 +118,10 @@ export const conversations = pgTable(
     /** Free-form replies are allowed until this moment (24h after the contact's last message). */
     serviceWindowExpiresAt: timestamp({ withTimezone: true }),
     humanUntil: timestamp({ withTimezone: true }),
+    /** Why the bot handed over, and its one-line summary for the inbox banner (spec §11.6). */
+    handoffReason: text(),
+    handoffSummary: text(),
+    handoffAt: timestamp({ withTimezone: true }),
     flowState: jsonb().$type<Record<string, unknown>>(),
     ...timestamps,
   },

@@ -1,0 +1,75 @@
+# Fees: the bot must quote exactly what the courses table says (spec §11.7).
+- id: fee-rscit-hinglish
+  tags: [fees]
+  turns:
+    - user: 'RSCIT ki fees kitni hai bhaiya'
+      expect:
+        {
+          intent: fee_query,
+          language: hinglish,
+          script: latin,
+          must_include: ['4500'],
+          handoff: false,
+        }
+
+- id: fee-tally-installments
+  tags: [fees]
+  turns:
+    - user: 'Tally ki fees kishton mein de sakte hain kya?'
+      expect: { intent: [fee_query, payment], must_include: ['4500', '4000'], handoff: false }
+
+- id: fee-web-dev-total
+  tags: [fees]
+  turns:
+    - user: 'web development course ka total kharcha kitna hai'
+      expect: { intent: [fee_query, course_info], must_include: ['18000'], handoff: false }
+
+- id: fee-python-english
+  tags: [fees]
+  turns:
+    - user: 'What is the fee for the Python course?'
+      expect:
+        { intent: fee_query, language: en, script: latin, must_include: ['15000'], handoff: false }
+
+- id: fee-web-installments-count
+  tags: [fees]
+  turns:
+    - user: 'Web development ki fees kitni kishton mein hai aur har kisht kitni?'
+      expect: { intent: [fee_query, payment], must_include: ['6000'], handoff: false }
+
+- id: fee-all-courses
+  tags: [fees]
+  turns:
+    - user: 'sabhi courses ki fees bata do'
+      expect:
+        {
+          intent: [fee_query, course_info],
+          must_include: ['4500', '8500', '18000', '15000'],
+          handoff: false,
+        }
+
+- id: fee-followup-reference
+  tags: [fees, multi_turn]
+  turns:
+    - user: 'Python course kitne mahine ka hai?'
+      expect: { intent: [course_info, fee_query], must_include: ['4'], handoff: false }
+    - user: 'aur uski fees?'
+      expect: { intent: fee_query, must_include: ['15000'], handoff: false }
+
+- id: fee-cheapest
+  tags: [fees]
+  turns:
+    - user: 'sabse sasta course kaunsa hai?'
+      expect: { must_include_any: ['RS-CIT', 'RSCIT'], must_include: ['4500'], handoff: false }
+
+- id: fee-rscit-one-time
+  tags: [fees]
+  turns:
+    - user: 'RS-CIT ki fees ek saath deni padegi ya kisht mein?'
+      expect: { intent: [fee_query, payment], must_include: ['4500'], handoff: false }
+
+- id: fee-tally-second-installment
+  tags: [fees]
+  turns:
+    - user: 'tally ki doosri kisht kab deni hoti hai'
+      expect: { intent: [fee_query, payment], must_include: ['30'], handoff: false }

@@ -2,6 +2,7 @@ packages:
   - apps/*
   - packages/*
   - packages/channels/*
+  - evals
 
 # pnpm 10 runs no dependency install scripts unless listed here.
 onlyBuiltDependencies:

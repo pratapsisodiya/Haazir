@@ -14,6 +14,12 @@ Three lines per phase (spec, "How to use this file").
 - Outbound gate (opt-out, 24h window, content limits) writes the row before Meta is called; the outbound worker retries Meta outages and records policy errors as failed. Duplicate deliveries store one row and send one reply, even if Redis loses its dedupe keys or a job crashes mid-way.
 - 23 integration tests (PGlite + MSW) plus parser/signature/window unit tests; CI runs the full loop end to end with a mock Graph API. `pnpm whatsapp:mock` / `whatsapp:simulate` let anyone try it locally.
 
-## Next: Phase 2, AI brain
+## Phase 2: AI brain (built; eval score pending an LLM key)
 
-Needs from Pratap: an LLM provider and key (OpenAI, Anthropic, Google or Azure OpenAI), 20 real Hindi voice notes to choose the speech-to-text provider, and the 60 coaching conversations for the eval set (or approval to draft them from the demo institute).
+- Pipeline per §11.1: no-LLM pre-checks (opt-out, human mode with 2h expiry, bot off / no AI / hourly cap → handoff, media → handoff, voice → transcript), router (fast model, zod-validated), hybrid retrieval (pgvector + full-text, RRF, threshold), answer (smart model) with read-only tools, prompt `answer-v1`, guardrails (numbers, script, length, competitors, guarantees, injection) with one rewrite then handoff, ai_traces and unanswered_questions.
+- Knowledge ingestion (FAQ, text, PDF via unpdf, website crawl with robots.txt, 20 pages, SSRF guard) on an `ingest` queue plus `pnpm knowledge:*` and `pnpm bot:ask`; speech-to-text via OpenAI or Sarvam (saaras:v3); courses, batches and bot config seeded for the demo institute; provider-agnostic (OpenAI, Anthropic, Google, Azure) via the Vercel AI SDK v7.
+- 73 eval cases + runner (`pnpm evals`, fails < 85% or any invented number, checked independently of the guardrail) and a CI job that runs when a key is configured. 253 automated tests across the repo (91 new); the pipeline is tested with mock models, the retrieval SQL on real pgvector.
+
+## Next: Phase 3, multi-tenant + dashboard core
+
+Needs from Pratap: an LLM key to run the evals and close Phase 2's "done when"; ~20 real Hindi voice notes to pick OpenAI vs Sarvam; a decision on where the dashboard and API are hosted for staging.

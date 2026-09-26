@@ -1,3 +1,4 @@
+import type { Models, Transcriber } from '@haazir/ai-core'
 import type { AnyDatabase } from '@haazir/db'
 import type {
   AiReplyJob,
@@ -42,6 +43,10 @@ export interface Deps {
   }
   storage: Storage
   graph(account: WhatsappAccount): GraphClient
+  /** Null when no LLM is configured: the bot then hands every chat to staff. */
+  models: Models | null
+  /** Null when no speech-to-text key is set: voice notes are handed to staff. */
+  stt: Transcriber | null
   log: Log
   now(): Date
 }

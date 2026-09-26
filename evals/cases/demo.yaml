@@ -1,0 +1,48 @@
+# Demo classes (Phase 2: the bot shares slots; booking itself arrives in Phase 4).
+- id: demo-tally
+  tags: [demo]
+  turns:
+    - user: 'Tally ka free demo chahiye'
+      expect:
+        {
+          intent: demo_booking,
+          must_include_any: ['10:00', 'Tally Subah'],
+          must_not_include: ['Tally Weekend'],
+          handoff: false,
+        }
+
+- id: demo-rscit-followup
+  tags: [demo, multi_turn]
+  turns:
+    - user: 'RSCIT ki demo class mil sakti hai?'
+      expect: { intent: demo_booking, handoff: false }
+    - user: 'shaam wala theek rahega'
+      expect: { handoff: false }
+
+- id: demo-python-english
+  tags: [demo]
+  turns:
+    - user: 'Can I attend a trial class for Python + AI?'
+      expect:
+        { intent: demo_booking, language: en, must_include_any: ['2:00', '14:00'], handoff: false }
+
+- id: demo-button
+  tags: [demo, menu]
+  turns:
+    - user: 'Free demo'
+      interactive_id: menu_demo
+      expect: { intent: demo_booking, handoff: false }
+
+- id: demo-web-dev
+  tags: [demo]
+  turns:
+    - user: 'web dev ka demo kab ho sakta hai'
+      expect: { intent: demo_booking, must_include_any: ['6:00', '18:00'], handoff: false }
+
+- id: demo-then-fee
+  tags: [demo, multi_turn]
+  turns:
+    - user: 'python ka demo lena hai'
+      expect: { intent: demo_booking, handoff: false }
+    - user: 'aur fees kitni hai iski'
+      expect: { intent: fee_query, must_include: ['15000'], handoff: false }

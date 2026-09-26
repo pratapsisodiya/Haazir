@@ -27,3 +27,8 @@ export interface InboundJob {
   payload: unknown
   receivedAt: string
 }
+
+export interface IngestJob {
+  orgId: string
+  sourceId: string
+}

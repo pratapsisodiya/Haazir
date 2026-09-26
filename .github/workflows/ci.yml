@@ -4,6 +4,8 @@ on:
   push:
     branches: [main, 'claude/**']
   pull_request:
+  schedule:
+    - cron: '30 20 * * *' # 2 AM IST: the nightly full eval run (spec §20)
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -80,3 +82,41 @@ jobs:
       - run: pnpm build
       - name: WhatsApp loop end to end (mock Meta)
         run: ./scripts/e2e-whatsapp.sh
+
+  evals:
+    # The 73 coaching conversations against real models (spec §11.7). Runs
+    # when an LLM key is configured as a repository secret, and skips with a
+    # notice until then. Fails under 85% or on any invented number.
+    name: Evals (real models)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Required by the env schema; evals use in-process Postgres, not these.
+      APP_URL: http://localhost:5173
+      API_URL: http://localhost:4000
+      DATABASE_URL: postgres://unused@localhost/unused
+      REDIS_URL: redis://localhost:6379
+      LLM_PROVIDER: ${{ vars.LLM_PROVIDER || 'openai' }}
+      LLM_FAST_MODEL: ${{ vars.LLM_FAST_MODEL }}
+      LLM_SMART_MODEL: ${{ vars.LLM_SMART_MODEL }}
+      EMBEDDING_PROVIDER: ${{ vars.EMBEDDING_PROVIDER || 'openai' }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+      AZURE_OPENAI_ENDPOINT: ${{ vars.AZURE_OPENAI_ENDPOINT }}
+      AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm evals
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results
+          path: evals/results/latest.json
+          if-no-files-found: ignore

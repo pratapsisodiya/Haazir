@@ -63,15 +63,21 @@ export const envSchema = z
     WHATSAPP_ACCESS_TOKEN: optional(),
     WHATSAPP_ORG_SLUG: z.string().default('shiksha-computer-sikar'),
 
+    // The AI brain (Phase 2). Any of the four providers; models are set per
+    // deployment so cost can be tuned without a code change (spec §4).
     LLM_PROVIDER: z.enum(['openai', 'anthropic', 'google', 'azure']).default('openai'),
-    LLM_FAST_MODEL: optional(),
-    LLM_SMART_MODEL: optional(),
+    LLM_FAST_MODEL: optional(), // routing, classification, extraction
+    LLM_SMART_MODEL: optional(), // answers
+    // Anthropic has no embedding models, so embeddings have their own provider.
+    EMBEDDING_PROVIDER: z.enum(['openai', 'google', 'azure']).default('openai'),
     EMBEDDING_MODEL: z.string().default('text-embedding-3-small'),
     OPENAI_API_KEY: optional(),
     ANTHROPIC_API_KEY: optional(),
-    AZURE_OPENAI_ENDPOINT: optional(),
+    GOOGLE_API_KEY: optional(),
+    AZURE_OPENAI_ENDPOINT: optional(), // https://<resource>.openai.azure.com/openai
     AZURE_OPENAI_API_KEY: optional(),
     STT_PROVIDER: z.enum(['openai', 'sarvam']).default('openai'),
+    STT_MODEL: optional(), // default per provider: gpt-4o-mini-transcribe / saarika:v2.5
     SARVAM_API_KEY: optional(),
 
     // S3-compatible storage (Cloudflare R2, MinIO…). With no endpoint set,
@@ -91,6 +97,10 @@ export const envSchema = z
     VAPID_PUBLIC_KEY: optional(),
     VAPID_PRIVATE_KEY: optional(),
     SENTRY_DSN: optional(),
+
+    // Set by pnpm: the directory a command was typed in, so CLI scripts
+    // resolve file arguments from there rather than from their package.
+    INIT_CWD: optional(),
   })
   .superRefine((env, ctx) => {
     if (env.STORAGE_ENDPOINT) {

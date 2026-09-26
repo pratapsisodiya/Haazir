@@ -1,0 +1,33 @@
+# Voice notes arrive as transcripts (speech-to-text runs before the brain).
+- id: voice-deva-fee
+  tags: [voice, devanagari]
+  turns:
+    - user: 'आरएससीआईटी की फीस कितनी है और क्लास कब से शुरू है'
+      type: audio
+      expect: { script: devanagari, must_include: ['4500'], handoff: false }
+
+- id: voice-hinglish-tally
+  tags: [voice]
+  turns:
+    - user: 'haan ji namaste mujhe tally sikhna hai uski fees aur timing batao'
+      type: audio
+      expect: { must_include: ['8500'], handoff: false }
+
+- id: voice-rambling
+  tags: [voice]
+  turns:
+    - user: 'wo mera beta hai na dasvi pass kiya hai usko computer ka kuch karwana hai sarkari naukri ke liye kaunsa theek rahega'
+      type: audio
+      expect:
+        {
+          must_include_any: ['RS-CIT', 'RSCIT'],
+          must_not_include: ['guarantee pakki'],
+          handoff: false,
+        }
+
+- id: voice-english
+  tags: [voice]
+  turns:
+    - user: 'hi I wanted to know the timings for the web development batch'
+      type: audio
+      expect: { language: en, must_include_any: ['6:00', '18:00'], handoff: false }

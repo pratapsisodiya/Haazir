@@ -8,21 +8,32 @@
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "knowledge": "tsx scripts/knowledge.ts",
+    "ask": "tsx scripts/ask.ts"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.65",
+    "@ai-sdk/azure": "^4.0.82",
+    "@ai-sdk/google": "^4.0.82",
+    "@ai-sdk/openai": "^4.0.78",
     "@aws-sdk/client-s3": "^3.1141.0",
     "@aws-sdk/lib-storage": "^3.1141.0",
+    "@haazir/ai-core": "workspace:*",
     "@haazir/db": "workspace:*",
     "@haazir/messaging": "workspace:*",
     "@haazir/shared": "workspace:*",
     "@haazir/storage": "workspace:*",
     "@haazir/whatsapp": "workspace:*",
+    "ai": "^7.0.116",
     "bullmq": "^5.81.0",
+    "cheerio": "^1.2.0",
     "drizzle-orm": "^0.45.0",
     "ioredis": "^5.11.0",
     "pg": "^8.23.0",
     "pino": "^10.3.0",
+    "robots-parser": "^3.0.1",
+    "unpdf": "^1.8.1",
     "zod": "^4.6.0"
   },
   "devDependencies": {

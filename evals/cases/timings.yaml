@@ -1,0 +1,53 @@
+# Batches and timings come from the batches table, with seats left.
+- id: batch-rscit-timing
+  tags: [timings]
+  turns:
+    - user: 'rscit ka batch kitne baje hota hai'
+      expect: { intent: batch_timing, must_include_any: ['8:00', '5:00'], handoff: false }
+
+- id: batch-tally-weekend
+  tags: [timings]
+  turns:
+    - user: 'Tally ka weekend batch hai kya?'
+      expect: { intent: batch_timing, must_include_any: ['11:00', 'Sat'], handoff: false }
+
+- id: batch-python-days
+  tags: [timings]
+  turns:
+    - user: 'Python ki class kaunse din hoti hai?'
+      expect:
+        {
+          intent: [batch_timing, course_info],
+          must_include_any: ['Mon, Wed, Fri', 'Somvar', 'Monday'],
+          handoff: false,
+        }
+
+- id: batch-web-evening
+  tags: [timings]
+  turns:
+    - user: 'Web development evening mein hai? mera college hai din mein'
+      expect: { intent: batch_timing, must_include_any: ['6:00', '18:00'], handoff: false }
+
+- id: batch-seats-left
+  tags: [timings]
+  turns:
+    - user: 'RS-CIT subah wale batch mein seat bachi hai?'
+      expect: { intent: batch_timing, must_include: ['8'], handoff: false }
+
+- id: batch-english
+  tags: [timings]
+  turns:
+    - user: 'When does the next Tally batch start?'
+      expect: { intent: batch_timing, language: en, must_include_any: ['Tally'], handoff: false }
+
+- id: batch-duration
+  tags: [timings]
+  turns:
+    - user: 'tally course kitne din ka hai'
+      expect: { intent: [course_info, batch_timing], must_include: ['3'], handoff: false }
+
+- id: batch-online-option
+  tags: [timings]
+  turns:
+    - user: 'kya online class bhi hoti hai?'
+      expect: { must_include_any: ['Web Development', 'web development'], handoff: false }

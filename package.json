@@ -21,7 +21,12 @@
     "services:down": "docker compose down",
     "whatsapp:connect": "pnpm --filter @haazir/db connect-whatsapp",
     "whatsapp:mock": "pnpm --filter @haazir/api mock-graph",
-    "whatsapp:simulate": "pnpm --filter @haazir/api simulate-webhook"
+    "whatsapp:simulate": "pnpm --filter @haazir/api simulate-webhook",
+    "knowledge:add": "pnpm --filter @haazir/worker knowledge add",
+    "knowledge:reindex": "pnpm --filter @haazir/worker knowledge reindex",
+    "knowledge:list": "pnpm --filter @haazir/worker knowledge list",
+    "bot:ask": "pnpm --filter @haazir/worker ask",
+    "evals": "pnpm --filter @haazir/evals evals"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

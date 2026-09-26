@@ -1,40 +1,58 @@
-import { PGlite } from '@electric-sql/pglite'
 import { eq, sql } from 'drizzle-orm'
-import { drizzle } from 'drizzle-orm/pglite'
-import { migrate } from 'drizzle-orm/pglite/migrator'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { migrationsFolder } from '../paths'
-import * as schema from '../schema'
-import { memberships, organizations, plans, users } from '../schema'
+import type { AnyDatabase } from '../client'
+import {
+  batches,
+  botConfigs,
+  courses,
+  knowledgeFaqs,
+  memberships,
+  organizations,
+  plans,
+  users,
+} from '../schema'
 import { seed } from '../seed'
-import { PLANS } from '../seed-data'
+import { DEMO_BATCHES, DEMO_COURSES, DEMO_FAQS, PLANS } from '../seed-data'
+import { createTestDb } from '../testing'
 
 // PGlite is real Postgres compiled to WASM, in-process: these tests run the
 // actual migration SQL without Docker. CI additionally migrates a real server.
-const client = new PGlite()
-const db = drizzle({ client, schema, casing: 'snake_case' })
+let db: AnyDatabase
+// node-postgres and PGlite both return { rows }; the generic database type can't say so.
+const rows = <T>(result: unknown) => (result as { rows: T[] }).rows
+let close: () => Promise<void>
 
 beforeAll(async () => {
-  await migrate(db, { migrationsFolder })
+  ;({ db, close } = await createTestDb())
 })
 
 afterAll(async () => {
-  await client.close()
+  await close()
 })
 
 describe('migrations', () => {
-  it('creates the tables so far (Phase 0 core + Phase 1 WhatsApp)', async () => {
-    const result = await db.execute<{ table_name: string }>(
-      sql`select table_name from information_schema.tables where table_schema = 'public' order by 1`,
+  it('creates the tables so far (core, WhatsApp, AI + coaching)', async () => {
+    const result = rows<{ table_name: string }>(
+      await db.execute(
+        sql`select table_name from information_schema.tables where table_schema = 'public' order by 1`,
+      ),
     )
-    expect(result.rows.map((r) => r.table_name)).toEqual([
+    expect(result.map((r) => r.table_name)).toEqual([
+      'ai_traces',
+      'batches',
+      'bot_configs',
       'contacts',
       'conversations',
+      'courses',
+      'knowledge_chunks',
+      'knowledge_faqs',
+      'knowledge_sources',
       'memberships',
       'messages',
       'organizations',
       'plans',
       'super_admins',
+      'unanswered_questions',
       'users',
       'whatsapp_accounts',
     ])
@@ -62,6 +80,24 @@ describe('seed', () => {
     expect(await db.$count(plans)).toBe(PLANS.length)
     expect(await db.$count(users)).toBe(3)
     expect(await db.$count(memberships)).toBe(2)
+    expect(await db.$count(courses)).toBe(DEMO_COURSES.length)
+    expect(await db.$count(batches)).toBe(DEMO_BATCHES.length)
+    expect(await db.$count(botConfigs)).toBe(1)
+    expect(await db.$count(knowledgeFaqs)).toBe(DEMO_FAQS.length)
+  })
+
+  it('has pgvector: stores and ranks embeddings by cosine distance', async () => {
+    const result = rows<{ d: number }>(
+      await db.execute(sql`select ('[1,0,0]'::vector <=> '[0.9,0.1,0]'::vector) as d`),
+    )
+    expect(Number(result[0]?.d)).toBeLessThan(0.01)
+  })
+
+  it('builds the full-text column itself', async () => {
+    const result = rows<{ t: string }>(
+      await db.execute(sql`select to_tsvector('simple', 'RS-CIT ki fees') as t`),
+    )
+    expect(result[0]?.t).toContain('fees')
   })
 
   it('stores plan money as integer paise', async () => {

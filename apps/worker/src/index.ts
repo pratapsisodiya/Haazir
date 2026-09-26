@@ -1,10 +1,12 @@
 import { Queue, Worker, type Job } from 'bullmq'
 import { Redis } from 'ioredis'
+import { AiNotConfiguredError, createModels, createTranscriber, type Models } from '@haazir/ai-core'
 import { createDb } from '@haazir/db'
 import {
   graphClientFor,
   type AiReplyJob,
   type InboundJob,
+  type IngestJob,
   type MediaJob,
   type OutboundJob,
 } from '@haazir/messaging'
@@ -16,6 +18,7 @@ import { HEARTBEAT_EVERY_MS, heartbeatProcessor } from './heartbeat'
 import { createLogger } from './logger'
 import { processAiReply } from './processors/aiReply'
 import { processInbound } from './processors/inbound'
+import { processIngest } from './processors/ingest'
 import { processMedia } from './processors/media'
 import { processOutbound } from './processors/outbound'
 import { redisKeyValue, redisLocks } from './redis'
@@ -36,6 +39,27 @@ const aiReplyQueue = queue<AiReplyJob>(QUEUES.aiReply, JOB_OPTIONS.aiReply)
 const mediaQueue = queue<MediaJob>(QUEUES.media, JOB_OPTIONS.media)
 const outboundQueue = queue<OutboundJob>(QUEUES.outbound, JOB_OPTIONS.outbound)
 
+// Without a key the worker still runs: the bot hands every chat to staff
+// rather than leaving people unanswered.
+let models: Models | null = null
+try {
+  models = createModels(env)
+  logger.info({ provider: env.LLM_PROVIDER, ...models.ids }, 'AI brain ready')
+} catch (err) {
+  if (!(err instanceof AiNotConfiguredError)) throw err
+  logger.warn(
+    { missing: err.missing },
+    'AI not configured: every conversation will be handed to staff',
+  )
+}
+
+const stt = createTranscriber(env)
+if (!stt)
+  logger.warn(
+    { provider: env.STT_PROVIDER },
+    'speech-to-text not configured: voice notes go to staff',
+  )
+
 const deps: Deps = {
   db: database.db,
   kv: redisKeyValue(connection),
@@ -47,6 +71,8 @@ const deps: Deps = {
   },
   storage: createStorage(env),
   graph: (account) => graphClientFor(account, env),
+  models,
+  stt,
   log: logger,
   now: () => new Date(),
 }
@@ -89,9 +115,13 @@ const workers = [
     (job) => processOutbound(deps, job.data, isLastAttempt(job)),
     { connection, concurrency: 20, limiter: { max: 80, duration: 1000 } },
   ),
-  new Worker<MediaJob>(QUEUES.media, (job) => processMedia(deps, job.data), {
+  new Worker<MediaJob>(QUEUES.media, (job) => processMedia(deps, job.data, isLastAttempt(job)), {
     connection,
     concurrency: 5,
+  }),
+  new Worker<IngestJob>(QUEUES.ingest, (job) => processIngest(deps, job.data), {
+    connection,
+    concurrency: 3,
   }),
 ]
 

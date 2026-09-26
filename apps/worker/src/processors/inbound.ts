@@ -99,7 +99,8 @@ export async function processInbound(
         { jobId: `media-${stored.messageId}` },
       )
     }
-    if (stored.mode === 'bot' && REPLYABLE.has(message.type)) {
+    // Voice notes are answered after the media job has transcribed them.
+    if (stored.mode === 'bot' && REPLYABLE.has(message.type) && message.type !== 'audio') {
       await deps.queues.aiReply.add(
         'reply',
         {

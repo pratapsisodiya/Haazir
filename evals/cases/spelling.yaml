@@ -1,0 +1,36 @@
+# Spelling mistakes and SMS-style typing.
+- id: spell-rscit
+  tags: [spelling]
+  turns:
+    - user: 'rs cit ki fess kitni h'
+      expect: { intent: fee_query, must_include: ['4500'], handoff: false }
+
+- id: spell-tally
+  tags: [spelling]
+  turns:
+    - user: 'taly corse ka fee?'
+      expect: { intent: fee_query, must_include: ['8500'], handoff: false }
+
+- id: spell-python
+  tags: [spelling]
+  turns:
+    - user: 'pyton course kab se start hoga'
+      expect: { intent: [batch_timing, course_info], must_include_any: ['Python'], handoff: false }
+
+- id: spell-web
+  tags: [spelling]
+  turns:
+    - user: 'websit banana sikhna h konsa corse'
+      expect: { must_include_any: ['Web Development'], handoff: false }
+
+- id: spell-address
+  tags: [spelling]
+  turns:
+    - user: 'adress bhejo institue ka'
+      expect: { intent: location, must_include_any: ['Station Road'], handoff: false }
+
+- id: spell-timing
+  tags: [spelling]
+  turns:
+    - user: 'tming kya h rscit ki shaam ki'
+      expect: { intent: batch_timing, must_include_any: ['5:00', '17:00'], handoff: false }

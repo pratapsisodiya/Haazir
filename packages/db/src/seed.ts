@@ -1,9 +1,28 @@
 import { pathToFileURL } from 'node:url'
-import { eq, sql } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import { loadEnv } from '@haazir/shared/env'
 import { createDb, type AnyDatabase } from './client'
-import { memberships, organizations, plans, superAdmins, users } from './schema'
-import { DEMO_ORG, DEMO_USERS, PLANS } from './seed-data'
+import {
+  batches,
+  botConfigs,
+  courses,
+  knowledgeFaqs,
+  knowledgeSources,
+  memberships,
+  organizations,
+  plans,
+  superAdmins,
+  users,
+} from './schema'
+import {
+  DEMO_BATCHES,
+  DEMO_BOT_CONFIG,
+  DEMO_COURSES,
+  DEMO_FAQS,
+  DEMO_ORG,
+  DEMO_USERS,
+  PLANS,
+} from './seed-data'
 
 /**
  * Idempotent: running it twice leaves the same rows. Grows each phase (courses,
@@ -54,7 +73,66 @@ export async function seed(db: AnyDatabase) {
 
   await db.insert(superAdmins).values({ userId: admin.id }).onConflictDoNothing()
 
+  await seedCoaching(db, org.id)
+
   return { org, owner, staff, admin }
+}
+
+/** Courses, batches, bot config and FAQs for one org. Skips anything already there. */
+export async function seedCoaching(db: AnyDatabase, orgId: string, today = new Date()) {
+  for (const course of DEMO_COURSES) {
+    const [existing] = await db
+      .select()
+      .from(courses)
+      .where(and(eq(courses.orgId, orgId), eq(courses.shortName, course.shortName)))
+    if (!existing) await db.insert(courses).values({ ...course, orgId })
+  }
+  const byShortName = new Map(
+    (await db.select().from(courses).where(eq(courses.orgId, orgId))).map((c) => [c.shortName, c]),
+  )
+
+  for (const b of DEMO_BATCHES) {
+    const course = byShortName.get(b.course)
+    if (!course) continue
+    const [existing] = await db
+      .select()
+      .from(batches)
+      .where(and(eq(batches.orgId, orgId), eq(batches.name, b.name)))
+    if (existing) continue
+    const start = new Date(today.getTime() + b.startInDays * 86_400_000)
+    await db.insert(batches).values({
+      orgId,
+      courseId: course.id,
+      name: b.name,
+      days: b.days,
+      startTime: b.startTime,
+      endTime: b.endTime,
+      startDate: start.toISOString().slice(0, 10),
+      seatsTotal: b.seatsTotal,
+      seatsFilled: b.seatsFilled,
+      demoAllowed: b.demoAllowed,
+    })
+  }
+
+  await db
+    .insert(botConfigs)
+    .values({ ...DEMO_BOT_CONFIG, orgId })
+    .onConflictDoNothing({ target: botConfigs.orgId })
+
+  // FAQs are stored now and embedded by the ingest job once an embedding key is set.
+  const [faqSource] = await db
+    .select()
+    .from(knowledgeSources)
+    .where(and(eq(knowledgeSources.orgId, orgId), eq(knowledgeSources.title, 'Aam sawaal (demo)')))
+  if (!faqSource) {
+    const [source] = await db
+      .insert(knowledgeSources)
+      .values({ orgId, type: 'faq', title: 'Aam sawaal (demo)' })
+      .returning()
+    await db
+      .insert(knowledgeFaqs)
+      .values(DEMO_FAQS.map((f) => ({ ...f, orgId, sourceId: source!.id, language: 'hinglish' })))
+  }
 }
 
 // Run directly: `pnpm db:seed`

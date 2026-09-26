@@ -1,0 +1,56 @@
+# Hindi in Devanagari: the reply must be in Devanagari too.
+- id: deva-fee-rscit
+  tags: [devanagari]
+  turns:
+    - user: 'आरएससीआईटी की फीस कितनी है?'
+      expect:
+        {
+          intent: fee_query,
+          language: hi,
+          script: devanagari,
+          must_include: ['4500'],
+          handoff: false,
+        }
+
+- id: deva-tally-timing
+  tags: [devanagari]
+  turns:
+    - user: 'टैली की क्लास कितने बजे होती है?'
+      expect:
+        { intent: batch_timing, script: devanagari, must_include_any: ['10', '11'], handoff: false }
+
+- id: deva-address
+  tags: [devanagari]
+  turns:
+    - user: 'इंस्टीट्यूट का पता क्या है?'
+      expect: { intent: location, script: devanagari, handoff: false }
+
+- id: deva-python-fee
+  tags: [devanagari]
+  turns:
+    - user: 'पायथन कोर्स की फीस और समय बताइए'
+      expect: { script: devanagari, must_include: ['15000'], handoff: false }
+
+- id: deva-documents
+  tags: [devanagari]
+  turns:
+    - user: 'एडमिशन के लिए कौन से कागज़ चाहिए?'
+      expect: { intent: admission, script: devanagari, handoff: false }
+
+- id: deva-demo
+  tags: [devanagari, demo]
+  turns:
+    - user: 'क्या फ्री डेमो क्लास मिल सकती है?'
+      expect: { intent: demo_booking, script: devanagari, handoff: false }
+
+- id: deva-greeting
+  tags: [devanagari, menu]
+  turns:
+    - user: 'नमस्ते'
+      expect: { intent: greeting, kind: reply, handoff: false }
+
+- id: deva-hostel-handoff
+  tags: [devanagari, not_in_kb]
+  turns:
+    - user: 'क्या हॉस्टल की सुविधा है?'
+      expect: { handoff: true }

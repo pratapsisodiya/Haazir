@@ -1,17 +1,16 @@
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { PGlite } from '@electric-sql/pglite'
-import { drizzle } from 'drizzle-orm/pglite'
-import { migrate } from 'drizzle-orm/pglite/migrator'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { migrationsFolder, whatsappAccounts, type AnyDatabase } from '@haazir/db'
-import * as schema from '@haazir/db/schema'
+import { whatsappAccounts } from '@haazir/db'
 import { seed } from '@haazir/db/seed'
+import { createTestDb } from '@haazir/db/testing'
 import { graphClientFor, type AiReplyJob, type MediaJob, type OutboundJob } from '@haazir/messaging'
 import { encryptSecret } from '@haazir/shared/crypto'
 import { LocalStorage } from '@haazir/storage'
+import type { Models } from '@haazir/ai-core'
+import { MockEmbeddingModelV4, MockLanguageModelV4 } from 'ai/test'
 import type { Deps } from '../deps'
 
 export const GRAPH = 'https://graph.test'
@@ -48,6 +47,18 @@ export function mockGraph() {
         id: '998877',
       }),
     ),
+    http.get(`${GRAPH}/v26.0/445566`, () =>
+      HttpResponse.json({
+        url: 'https://lookaside.test/445566',
+        mime_type: 'audio/ogg',
+        file_size: 4,
+        id: '445566',
+      }),
+    ),
+    http.get(
+      'https://lookaside.test/445566',
+      () => new HttpResponse('OggS', { headers: { 'content-type': 'audio/ogg' } }),
+    ),
     http.get('https://lookaside.test/998877', ({ request }) =>
       request.headers.get('authorization') === `Bearer ${TOKEN}`
         ? new HttpResponse('jpeg-bytes!', { headers: { 'content-type': 'image/jpeg' } })
@@ -67,6 +78,46 @@ export function mockGraph() {
       failWith = null
       next = 1
     },
+  }
+}
+
+/** What the stand-in brain always says: no numbers, so no guardrail trips. */
+export const MOCK_REPLY = 'Ji, main aapki madad karta hoon. Aap kaunsa course dekh rahe hain?'
+
+const usage = {
+  inputTokens: { total: 10, noCache: 10, cacheRead: 0, cacheWrite: 0 },
+  outputTokens: { total: 5, text: 5, reasoning: 0 },
+}
+const textModel = (text: string) =>
+  new MockLanguageModelV4({
+    doGenerate: async () => ({
+      content: [{ type: 'text', text }],
+      finishReason: { unified: 'stop', raw: 'stop' },
+      usage,
+      warnings: [],
+    }),
+  })
+
+/** A brain that routes everything to "course_info" and answers with MOCK_REPLY. */
+export function mockModels(): Models {
+  return {
+    fast: textModel(
+      JSON.stringify({
+        language: 'hinglish',
+        script: 'latin',
+        intent: 'other',
+        entities: {},
+        confidence: 0.9,
+      }),
+    ),
+    smart: textModel(MOCK_REPLY),
+    embedding: new MockEmbeddingModelV4({
+      doEmbed: async ({ values }) => ({
+        embeddings: values.map(() => new Array(1536).fill(0.01)),
+        warnings: [],
+      }),
+    }),
+    ids: { fast: 'mock-fast', smart: 'mock-smart', embedding: 'mock-embed' },
   }
 }
 
@@ -99,9 +150,7 @@ function recorder<T>() {
 }
 
 export async function createHarness() {
-  const client = new PGlite()
-  const db = drizzle({ client, schema, casing: 'snake_case' }) as unknown as AnyDatabase
-  await migrate(db as never, { migrationsFolder })
+  const { db, close } = await createTestDb()
   const { org } = await seed(db)
   const [account] = await db
     .insert(whatsappAccounts)
@@ -150,6 +199,8 @@ export async function createHarness() {
         META_GRAPH_API_VERSION: 'v26.0',
         ENCRYPTION_KEY: KEY,
       }),
+    models: mockModels(),
+    stt: null,
     log: { debug: silent, info: silent, warn: silent, error: silent },
     now: () => now,
   }
@@ -165,7 +216,7 @@ export async function createHarness() {
     setNow(d: Date) {
       now = d
     },
-    close: () => client.close(),
+    close,
   }
 }
 
@@ -239,6 +290,28 @@ export function inboundImage(id: string) {
         timestamp: '1790407230',
         type: 'image',
         image: { id: '998877', mime_type: 'image/jpeg', caption: 'Fees ki receipt' },
+      },
+    ],
+  })
+}
+
+export function inboundVoiceNote(id: string) {
+  return envelope({
+    contacts: [
+      {
+        profile: { name: 'Anil Kumar' },
+        wa_id: '919812345678',
+        user_id: 'IN.13491208655302741918',
+      },
+    ],
+    messages: [
+      {
+        from: '919812345678',
+        user_id: 'IN.13491208655302741918',
+        id,
+        timestamp: '1790407235',
+        type: 'audio',
+        audio: { id: '445566', mime_type: 'audio/ogg; codecs=opus', voice: true },
       },
     ],
   })

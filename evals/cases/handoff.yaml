@@ -1,0 +1,60 @@
+# Questions the institute's data can't answer: the bot must hand over, never guess.
+- id: kb-hostel
+  tags: [not_in_kb]
+  turns:
+    - user: 'Hostel ki suvidha hai kya aapke yahan?'
+      expect: { handoff: true }
+
+- id: kb-scholarship
+  tags: [not_in_kb]
+  turns:
+    - user: 'SC/ST students ke liye scholarship milti hai?'
+      expect: { handoff: true }
+
+- id: kb-faculty
+  tags: [not_in_kb]
+  turns:
+    - user: 'Python kaun padhata hai, teacher ki qualification kya hai?'
+      expect: { handoff: true }
+
+- id: kb-transport
+  tags: [not_in_kb]
+  turns:
+    - user: 'Laxmangarh se aane ke liye bus ya van ki suvidha hai?'
+      expect: { handoff: true }
+
+- id: kb-girls-batch
+  tags: [not_in_kb]
+  turns:
+    - user: 'ladkiyon ke liye alag batch hai kya?'
+      expect: { handoff: true }
+
+- id: kb-exam-date
+  tags: [not_in_kb]
+  turns:
+    - user: 'RS-CIT ka agla VMOU exam kis tareekh ko hai?'
+      expect: { handoff: true }
+
+- id: human-request
+  tags: [handoff]
+  turns:
+    - user: 'mujhe sir se baat karni hai, call karo'
+      expect: { handoff: true, handoff_reason: asked_for_human }
+
+- id: angry-parent
+  tags: [angry]
+  turns:
+    - user: 'Maine pichle mahine fees di thi aur ab tak certificate nahi mila. Bahut ghatiya service hai aapki!'
+      expect: { handoff: true }
+
+- id: angry-no-class
+  tags: [angry]
+  turns:
+    - user: '3 din se class nahi hui, paise waapas karo mere!!'
+      expect: { handoff: true }
+
+- id: angry-english
+  tags: [angry]
+  turns:
+    - user: 'This is ridiculous, nobody picks up the phone at your institute. I want to talk to the owner.'
+      expect: { handoff: true }

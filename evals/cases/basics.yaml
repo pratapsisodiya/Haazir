@@ -1,0 +1,53 @@
+# Opt-out, greetings, thanks, certificates and admission.
+- id: optout-stop
+  tags: [opt_out]
+  turns:
+    - user: 'STOP'
+      expect: { kind: optout }
+
+- id: optout-hindi
+  tags: [opt_out]
+  turns:
+    - user: 'मत भेजो'
+      expect: { kind: optout }
+
+- id: optout-hinglish
+  tags: [opt_out]
+  turns:
+    - user: 'band karo'
+      expect: { kind: optout }
+
+- id: greeting-menu
+  tags: [menu]
+  turns:
+    - user: 'Hello'
+      expect: { intent: greeting, kind: reply, handoff: false }
+
+- id: thanks-bye
+  tags: [menu]
+  turns:
+    - user: 'theek hai dhanyavaad ji'
+      expect: { intent: thanks_bye, handoff: false }
+
+- id: certificate-rscit
+  tags: [certificate]
+  turns:
+    - user: 'RSCIT ka certificate kaun deta hai?'
+      expect:
+        {
+          intent: [certificate, course_info],
+          must_include_any: ['VMOU', 'Vardhman'],
+          handoff: false,
+        }
+
+- id: admission-documents
+  tags: [admission]
+  turns:
+    - user: 'admission ke liye kya kya documents lagenge'
+      expect: { intent: admission, must_include_any: ['Aadhaar', 'aadhaar'], handoff: false }
+
+- id: refund-policy
+  tags: [admission]
+  turns:
+    - user: 'agar join karke pasand nahi aaya to fees wapas milegi?'
+      expect: { must_include: ['7'], handoff: false }
